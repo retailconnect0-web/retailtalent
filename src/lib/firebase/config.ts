@@ -12,16 +12,21 @@ const firebaseConfig = {
   measurementId: "G-8QZF1VBNDH"
 };
 
-// Initialize Firebase securely to prevent multiple instances
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
 
-// Force Long Polling to bypass Turbopack WebSocket bug causing "client is offline"
-const db = initializeFirestore(app, {
-  experimentalForceLongPolling: true
-});
-
-// Analytics removed to prevent 403 Installations API errors if API Key is restricted
+let auth: any = {};
+let db: any = {};
 const analytics = null;
+
+if (typeof window !== "undefined") {
+  try {
+    auth = getAuth(app);
+    db = initializeFirestore(app, {
+      experimentalForceLongPolling: true
+    });
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+  }
+}
 
 export { app, auth, db, analytics };
