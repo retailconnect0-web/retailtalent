@@ -35,7 +35,7 @@ export default function HirePage() {
         router.push("/dashboard");
       } else {
         const fullName = `${firstName} ${lastName}`;
-        await userService.registerRecruiter(email, password, fullName, companyName);
+        await userService.registerRecruiter(email, password, fullName, companyName, "", "", "");
         router.push("/dashboard");
       }
     } catch (error: any) {
