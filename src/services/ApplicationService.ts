@@ -1,13 +1,4 @@
-import { db } from "@/lib/firebase/config";
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  addDoc, 
-  query, 
-  where 
-} from "firebase/firestore";
-
+import { getFirebaseDb } from "@/lib/firebase/config";
 export interface JobApplication {
   id: string;
   jobId: string;
@@ -21,6 +12,9 @@ class ApplicationService {
   
   // Apply for a job
   async createApplication(jobId: string, candidateId: string, companyId: string): Promise<JobApplication> {
+    const { collection, addDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     // Check if already applied
     const hasApplied = await this.hasUserApplied(jobId, candidateId);
     if (hasApplied) {
@@ -46,6 +40,9 @@ class ApplicationService {
 
   // Check if a user has applied to a specific job
   async hasUserApplied(jobId: string, candidateId: string): Promise<boolean> {
+    const { collection, getDocs, query, where } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const applicationsRef = collection(db, "applications");
     const q = query(
       applicationsRef, 
@@ -58,6 +55,9 @@ class ApplicationService {
 
   // Get all job IDs that a specific candidate has applied for
   async getAppliedJobIdsForCandidate(candidateId: string): Promise<string[]> {
+    const { collection, getDocs, query, where } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const applicationsRef = collection(db, "applications");
     const q = query(applicationsRef, where("candidateId", "==", candidateId));
     const querySnapshot = await getDocs(q);
@@ -72,6 +72,9 @@ class ApplicationService {
 
   // Get full applications for a candidate
   async getApplicationsForCandidate(candidateId: string): Promise<JobApplication[]> {
+    const { collection, getDocs, query, where } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const applicationsRef = collection(db, "applications");
     const q = query(applicationsRef, where("candidateId", "==", candidateId));
     const querySnapshot = await getDocs(q);

@@ -20,8 +20,8 @@ import {
   Send
 } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/lib/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/config";
+
 
 const jobSchema = z.object({
   title: z.string().min(3, "Job title must be at least 3 characters."),
@@ -51,7 +51,11 @@ export default function PostNewJobPage() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribe: any;
+      const initAuth = async () => {
+        const { onAuthStateChanged } = await import("firebase/auth");
+        const auth = await getFirebaseAuth();
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const userProfile = await userService.getCurrentUser();
         if (userProfile && userProfile.role === "recruiter" && userProfile.companyId) {
@@ -72,7 +76,7 @@ export default function PostNewJobPage() {
       setLoadingAuth(false);
     });
 
-    return () => unsubscribe();
+    }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, [router]);
 
   const onSubmit = async (values: z.infer<typeof jobSchema>) => {

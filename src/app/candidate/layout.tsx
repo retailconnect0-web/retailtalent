@@ -4,8 +4,8 @@ import Link from "next/link";
 import { Home, Search, Briefcase, User, Bell, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { userService, UserProfile } from "@/services/UserService";
-import { auth } from "@/lib/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/config";
+
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
@@ -18,7 +18,11 @@ export default function CandidateLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribe: any;
+      const initAuth = async () => {
+        const { onAuthStateChanged } = await import("firebase/auth");
+        const auth = await getFirebaseAuth();
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const userProfile = await userService.getCurrentUser();
         if (userProfile && userProfile.role === "candidate") {
@@ -26,7 +30,7 @@ export default function CandidateLayout({
         }
       }
     });
-    return () => unsubscribe();
+    }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, []);
 
   const navLinks = [

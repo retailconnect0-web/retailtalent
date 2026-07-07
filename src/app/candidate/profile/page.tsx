@@ -11,8 +11,8 @@ import {
   Camera, UploadCloud, Edit3 
 } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/lib/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/config";
+
 
 export default function CandidateProfilePage() {
   const router = useRouter();
@@ -41,7 +41,11 @@ export default function CandidateProfilePage() {
   const resumeInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribe: any;
+      const initAuth = async () => {
+        const { onAuthStateChanged } = await import("firebase/auth");
+        const auth = await getFirebaseAuth();
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const userProfile = await userService.getCurrentUser();
         if (userProfile && userProfile.role === "candidate") {
@@ -70,7 +74,7 @@ export default function CandidateProfilePage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, [router]);
 
   const uploadToCloudinary = async (file: File, type: 'image' | 'raw') => {

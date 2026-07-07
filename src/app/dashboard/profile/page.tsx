@@ -16,8 +16,8 @@ import {
   Edit3, 
   Map
 } from "lucide-react";
-import { auth } from "@/lib/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/config";
+
 
 const CLOUDINARY_CLOUD_NAME = "ddnv4rmh4";
 const CLOUDINARY_UPLOAD_PRESET = "retailconnect_uploads";
@@ -54,7 +54,11 @@ export default function CompanyProfilePage() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribe: any;
+      const initAuth = async () => {
+        const { onAuthStateChanged } = await import("firebase/auth");
+        const auth = await getFirebaseAuth();
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const userProfile = await userService.getCurrentUser();
         if (userProfile && userProfile.role === "recruiter") {
@@ -80,7 +84,7 @@ export default function CompanyProfilePage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, [router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

@@ -10,8 +10,8 @@ import {
   Users
 } from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/lib/firebase/config";
-import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase/config";
+
 
 export default function MessagesPage() {
   const router = useRouter();
@@ -22,7 +22,11 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<any[]>([]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let unsubscribe: any;
+      const initAuth = async () => {
+        const { onAuthStateChanged } = await import("firebase/auth");
+        const auth = await getFirebaseAuth();
+        unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const userProfile = await userService.getCurrentUser();
         if (userProfile && userProfile.role === "recruiter") {
@@ -37,7 +41,7 @@ export default function MessagesPage() {
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, [router]);
 
   if (loading) {

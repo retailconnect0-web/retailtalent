@@ -7,8 +7,8 @@ import { userService, UserProfile } from "@/services/UserService";
 import { jobService, Job } from "@/services/JobService";
 import { applicationService } from "@/services/ApplicationService";
 import { toast } from "sonner";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
+
+import { getFirebaseAuth } from "@/lib/firebase/config";
 import Link from "next/link";
 
 const FilterContent = () => (
@@ -121,7 +121,11 @@ export default function JobsPage() {
   const [loadingJobs, setLoadingJobs] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    let unsubscribe: any;
+      const initAuth = async () => {
+        const { onAuthStateChanged } = await import("firebase/auth");
+        const auth = await getFirebaseAuth();
+        unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const profile = await userService.getCurrentUser();
         setUserProfile(profile);
@@ -134,7 +138,7 @@ export default function JobsPage() {
         setAppliedJobIds([]);
       }
     });
-    return () => unsubscribe();
+    }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, []);
 
   useEffect(() => {

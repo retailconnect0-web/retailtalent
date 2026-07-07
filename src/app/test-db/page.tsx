@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, limit, query, setDoc, doc } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
+
+import { getFirebaseDb } from "@/lib/firebase/config";
 
 export default function TestDB() {
   const [status, setStatus] = useState<string>("Testing connection...");
@@ -11,6 +11,9 @@ export default function TestDB() {
   useEffect(() => {
     async function testConnection() {
       try {
+        const { collection, getDocs, limit, query, setDoc, doc } = await import("firebase/firestore");
+        const db = await getFirebaseDb();
+        
         // Attempt a very simple read
         setStatus("Testing read access...");
         const q = query(collection(db, "jobs"), limit(1));

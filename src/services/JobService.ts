@@ -1,14 +1,4 @@
-import { db } from "@/lib/firebase/config";
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  getDoc, 
-  addDoc, 
-  query, 
-  where 
-} from "firebase/firestore";
-
+import { getFirebaseDb } from "@/lib/firebase/config";
 export interface Job {
   id: string;
   title: string;
@@ -30,6 +20,9 @@ export interface Job {
 class JobService {
   // Fetch all active jobs (for public jobs board)
   async getAllJobs(): Promise<Job[]> {
+    const { collection, getDocs, query, where } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const jobsRef = collection(db, "jobs");
     const q = query(jobsRef, where("status", "==", "Active"));
     const querySnapshot = await getDocs(q);
@@ -44,6 +37,9 @@ class JobService {
 
   // Fetch jobs ONLY for a specific company (for recruiter dashboard)
   async getJobsByCompany(companyId: string): Promise<Job[]> {
+    const { collection, getDocs, query, where } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const jobsRef = collection(db, "jobs");
     const q = query(jobsRef, where("companyId", "==", companyId));
     const querySnapshot = await getDocs(q);
@@ -57,6 +53,9 @@ class JobService {
   }
 
   async getJobById(id: string): Promise<Job | null> {
+    const { doc, getDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const docRef = doc(db, "jobs", id);
     const docSnap = await getDoc(docRef);
     
@@ -68,6 +67,9 @@ class JobService {
 
   // Create a new job, associating it with the current user's company
   async createJob(jobData: Omit<Job, "id" | "postedAt">): Promise<Job> {
+    const { collection, addDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
     const jobsRef = collection(db, "jobs");
     const newJobData = {
       ...jobData,
