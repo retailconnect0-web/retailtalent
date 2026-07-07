@@ -1,22 +1,4 @@
-import { auth, db } from "@/lib/firebase/config";
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged,
-  sendPasswordResetEmail,
-  GoogleAuthProvider,
-  signInWithPopup,
-  User as FirebaseUser
-} from "firebase/auth";
-import { 
-  doc, 
-  setDoc, 
-  updateDoc,
-  getDoc, 
-  collection, 
-  addDoc 
-} from "firebase/firestore";
+import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase/config";
 
 export interface UserProfile {
   uid: string;
@@ -54,6 +36,11 @@ class UserService {
   
   // Gets the current user profile from Firestore based on Auth state
   async getCurrentUser(): Promise<UserProfile | null> {
+    const { onAuthStateChanged } = await import("firebase/auth");
+    const { doc, getDoc } = await import("firebase/firestore");
+    const auth = await getFirebaseAuth();
+    const db = await getFirebaseDb();
+
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
         unsubscribe(); // Only need one execution for this method
@@ -79,6 +66,11 @@ class UserService {
 
   // Register a new Candidate
   async registerCandidate(email: string, password: string, fullName: string): Promise<UserProfile> {
+    const { createUserWithEmailAndPassword } = await import("firebase/auth");
+    const { doc, setDoc } = await import("firebase/firestore");
+    const auth = await getFirebaseAuth();
+    const db = await getFirebaseDb();
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
@@ -98,6 +90,11 @@ class UserService {
 
   // Register a new Recruiter (creating a Company portal for them)
   async registerRecruiter(email: string, password: string, fullName: string, companyName: string, state: string, city: string, phone: string): Promise<UserProfile> {
+    const { createUserWithEmailAndPassword } = await import("firebase/auth");
+    const { doc, setDoc, addDoc, collection } = await import("firebase/firestore");
+    const auth = await getFirebaseAuth();
+    const db = await getFirebaseDb();
+
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
@@ -127,6 +124,9 @@ class UserService {
   
   // Update User Profile (used by candidates to complete profile)
   async updateUserProfile(uid: string, data: Partial<UserProfile>): Promise<void> {
+    const { doc, updateDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+
     const userRef = doc(db, "users", uid);
     await updateDoc(userRef, {
       ...data,
@@ -136,6 +136,9 @@ class UserService {
 
   // Get Company Details
   async getCompanyDetails(companyId: string): Promise<CompanyProfile | null> {
+    const { doc, getDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+
     try {
       const docRef = doc(db, "companies", companyId);
       const docSnap = await getDoc(docRef);
@@ -151,12 +154,20 @@ class UserService {
 
   // Update Company Details
   async updateCompanyDetails(companyId: string, data: Partial<CompanyProfile>): Promise<void> {
+    const { doc, updateDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+
     const companyRef = doc(db, "companies", companyId);
     await updateDoc(companyRef, data);
   }
 
   // Candidate Google Sign-In
   async signInWithGoogleCandidate(): Promise<UserProfile> {
+    const { GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
+    const { doc, getDoc, setDoc } = await import("firebase/firestore");
+    const auth = await getFirebaseAuth();
+    const db = await getFirebaseDb();
+
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
@@ -182,6 +193,11 @@ class UserService {
 
   // Standard Login
   async login(email: string, password: string): Promise<UserProfile | null> {
+    const { signInWithEmailAndPassword } = await import("firebase/auth");
+    const { doc, getDoc } = await import("firebase/firestore");
+    const auth = await getFirebaseAuth();
+    const db = await getFirebaseDb();
+
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
@@ -195,11 +211,15 @@ class UserService {
   }
 
   async logout(): Promise<void> {
+    const { signOut } = await import("firebase/auth");
+    const auth = await getFirebaseAuth();
     await signOut(auth);
   }
 
   // Send Password Reset Email
   async resetPassword(email: string): Promise<void> {
+    const { sendPasswordResetEmail } = await import("firebase/auth");
+    const auth = await getFirebaseAuth();
     await sendPasswordResetEmail(auth, email);
   }
 }

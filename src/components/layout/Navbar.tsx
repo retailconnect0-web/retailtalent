@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 import { userService, UserProfile } from "@/services/UserService";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
+import { getFirebaseAuth } from "@/lib/firebase/config";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -23,15 +22,27 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        const profile = await userService.getCurrentUser();
-        setUser(profile);
-      } else {
-        setUser(null);
-      }
-    });
-    return () => unsubscribe();
+    let unsubscribe: any;
+    
+    const initAuth = async () => {
+      const { onAuthStateChanged } = await import("firebase/auth");
+      const auth = await getFirebaseAuth();
+      
+      unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+          const profile = await userService.getCurrentUser();
+          setUser(profile);
+        } else {
+          setUser(null);
+        }
+      });
+    };
+    
+    initAuth();
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   return (

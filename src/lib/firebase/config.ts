@@ -1,6 +1,4 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDXo0zaY2prlHlFRPYRVnXfNMkeIkc11UU",
@@ -12,21 +10,19 @@ const firebaseConfig = {
   measurementId: "G-8QZF1VBNDH"
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+export const getFirebaseApp = () => {
+  return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+};
 
-let auth: any = {};
-let db: any = {};
-const analytics = null;
+export const getFirebaseAuth = async () => {
+  const { getAuth } = await import("firebase/auth");
+  return getAuth(getFirebaseApp());
+};
 
-if (typeof window !== "undefined") {
-  try {
-    auth = getAuth(app);
-    db = initializeFirestore(app, {
-      experimentalForceLongPolling: true
-    });
-  } catch (error) {
-    console.error("Firebase initialization error:", error);
-  }
-}
+export const getFirebaseDb = async () => {
+  const { initializeFirestore } = await import("firebase/firestore");
+  return initializeFirestore(getFirebaseApp(), {
+    experimentalForceLongPolling: true
+  });
+};
 
-export { app, auth, db, analytics };
