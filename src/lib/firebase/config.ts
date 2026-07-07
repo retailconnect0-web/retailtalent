@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 import { initializeFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDXo0zaY2prlHlFRPYRVnXfNMkeIkc11UU",
-  authDomain: "retailconnect-b26fd.firebaseapp.com",
-  projectId: "retailconnect-b26fd",
-  storageBucket: "retailconnect-b26fd.firebasestorage.app",
-  messagingSenderId: "535318561217",
-  appId: "1:535318561217:web:b5342b8e1c84a5efe76f40",
-  measurementId: "G-8QZF1VBNDH"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase securely to prevent multiple instances
