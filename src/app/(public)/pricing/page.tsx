@@ -1,43 +1,91 @@
-import { Check } from "lucide-react";
+import { Calendar, MapPin, Users, IndianRupee } from "lucide-react";
 
-export default function PricingPage() {
+export default function SalesTrainingPage() {
+  // Mock data for sales trainings
+  const trainings = [
+    {
+      id: 1,
+      title: "Advanced FMCG Sales Techniques",
+      date: "2026-08-15",
+      location: "Mumbai HQ",
+      capacity: 50,
+      price: 500,
+      description: "Learn advanced techniques for selling fast-moving consumer goods in retail environments."
+    },
+    {
+      id: 2,
+      title: "Customer Engagement Masterclass",
+      date: "2026-08-22",
+      location: "Zoom Online",
+      capacity: 100,
+      price: 0,
+      description: "Master the art of engaging customers on the floor and increasing conversion rates."
+    },
+    {
+      id: 3,
+      title: "Visual Merchandising Basics",
+      date: "2026-09-05",
+      location: "Delhi Branch",
+      capacity: 30,
+      price: 1500,
+      description: "Learn how to arrange store displays to maximize sales and highlight key products."
+    }
+  ];
+
   return (
-    <div className="pt-32 pb-24 min-h-screen">
+    <div className="pt-32 pb-24 min-h-screen bg-slate-50">
       <div className="container mx-auto px-4 md:px-6">
+        
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Dynamic & Transparent Pricing</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-slate-900">Sales Training Programs</h1>
           <p className="text-muted-foreground text-lg md:text-xl">
-            Our pricing is tailored to the capacity, experience, and role of the candidate you hire.
+            Upgrade your skills and increase your earning potential with our expert-led retail and sales training sessions.
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          <div className="border rounded-2xl p-8 md:p-12 bg-white shadow-xl flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-4">Pay for Performance & Capacity</h3>
-              <p className="text-muted-foreground mb-6">
-                We don't believe in one-size-fits-all subscription plans. You only pay based on the specific requirements of your booking:
-              </p>
-              <ul className="flex flex-col gap-4 mb-8">
-                <li className="flex items-center gap-3"><Check className="w-5 h-5 text-emerald-500" /> <span className="font-medium text-slate-700">Role Type</span> (Promoter, Merchandiser, Sales)</li>
-                <li className="flex items-center gap-3"><Check className="w-5 h-5 text-emerald-500" /> <span className="font-medium text-slate-700">Experience Level & Skillset</span></li>
-                <li className="flex items-center gap-3"><Check className="w-5 h-5 text-emerald-500" /> <span className="font-medium text-slate-700">Duration</span> (Weekend, Daily, Monthly, Event-based)</li>
-                <li className="flex items-center gap-3"><Check className="w-5 h-5 text-emerald-500" /> <span className="font-medium text-slate-700">Candidate Ratings & Reviews</span></li>
-              </ul>
-            </div>
-            
-            <div className="w-full md:w-[320px] border rounded-xl p-6 bg-slate-50 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <span className="text-2xl font-bold text-blue-600">₹</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {trainings.map((training) => (
+            <div key={training.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow flex flex-col">
+              <div className="p-6 flex-1">
+                <div className="flex justify-between items-start mb-4">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    Retail Skills
+                  </span>
+                  <span className="text-lg font-bold text-slate-900">
+                    {training.price > 0 ? `₹${training.price}` : "Free"}
+                  </span>
+                </div>
+                
+                <h3 className="text-xl font-bold text-slate-900 mb-2">{training.title}</h3>
+                <p className="text-slate-500 text-sm mb-6 line-clamp-2">
+                  {training.description}
+                </p>
+
+                <div className="space-y-3 text-sm text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-emerald-500" />
+                    <span>{new Date(training.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-emerald-500" />
+                    <span>{training.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4 text-emerald-500" />
+                    <span>Capacity: {training.capacity}</span>
+                  </div>
+                </div>
               </div>
-              <h4 className="font-bold text-lg mb-2">Get a Custom Quote</h4>
-              <p className="text-sm text-slate-500 mb-6">Connect with us to find the right talent at the right price for your specific needs.</p>
-              <button className="w-full py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors shadow-lg shadow-primary/25">
-                Contact Sales
-              </button>
+              
+              <div className="p-6 pt-0 mt-auto">
+                <button className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors shadow-md shadow-blue-600/20">
+                  Register Now
+                </button>
+              </div>
             </div>
-          </div>
+          ))}
         </div>
+
       </div>
     </div>
   );
