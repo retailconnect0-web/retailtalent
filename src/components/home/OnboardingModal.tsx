@@ -57,7 +57,6 @@ export function OnboardingModal() {
                 />
               </div>
             </div>
-            <p className="mt-4 text-slate-500 font-medium text-lg">मुझे नौकरी चाहिए</p>
           </div>
 
           {/* Recruiter Card */}
@@ -80,7 +79,6 @@ export function OnboardingModal() {
                 />
               </div>
             </div>
-            <p className="mt-4 text-slate-500 font-medium text-lg">मुझे लोग काम पे रखने है</p>
           </div>
 
         </div>
