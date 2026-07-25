@@ -162,8 +162,11 @@ export default function SalesTrainingPage() {
                   <input 
                     required 
                     type="tel" 
+                    maxLength={10}
+                    pattern="[0-9]{10}"
+                    title="Please enter exactly 10 digits"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
                     placeholder="e.g. 9876543210" 
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   />
