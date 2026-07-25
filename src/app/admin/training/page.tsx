@@ -74,7 +74,7 @@ export default function AdminSalesTrainingPage() {
     setLoading(true);
 
     try {
-      const payload: Partial<Training> = {
+      const payload: Omit<Training, "id" | "createdAt" | "updatedAt"> = {
         title,
         location,
         price: Number(price),
