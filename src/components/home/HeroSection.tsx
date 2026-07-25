@@ -6,17 +6,9 @@ import Link from "next/link";
 
 export function HeroSection() {
   const categories = [
-    { name: "Remote", icon: Home },
-    { name: "MNC", icon: Building2 },
-    { name: "Startup", icon: Rocket },
-    { name: "Project Mgmt", icon: CheckCircle2 },
-    { name: "Internship", icon: GraduationCap },
-    { name: "Engineering", icon: Settings },
-    { name: "Supply Chain", icon: Box },
-    { name: "HR", icon: Users },
-    { name: "Fortune 500", icon: Award },
-    { name: "Software & IT", icon: Monitor },
-    { name: "Analytics", icon: PieChart },
+    { name: "Promotor", icon: Users },
+    { name: "Merchendiser", icon: Box },
+    { name: "Frontline Sales proffesionals", icon: Award }
   ];
 
   return (

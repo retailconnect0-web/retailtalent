@@ -11,15 +11,21 @@ export interface UserProfile {
   // Candidate fields
   resumeUrl?: string;
   photoUrl?: string;
+  aadhaarUrl?: string;
+  panUrl?: string;
   phoneNumber?: string;
   altPhoneNumber?: string;
   dob?: string;
   qualification?: string;
   college?: string;
   languages?: string;
-  skills?: string;
-  experience?: string;
+  skills?: string; // (Sampling, Demo, Merchandising)
+  experience?: string; // (Brand / Store / Category)
   location?: string;
+  city?: string;
+  availability?: string; // (Daily / Monthly / Event-based)
+  rating?: number;
+  totalEarnings?: number;
 }
 
 export interface CompanyProfile {
