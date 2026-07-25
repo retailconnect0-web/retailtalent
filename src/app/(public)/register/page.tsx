@@ -8,7 +8,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, ArrowRight, Building2, MapPin, Phone, Map } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { userService } from "@/services/UserService";
 
 const recruiterSchema = z.object({
@@ -37,6 +37,13 @@ const INDIAN_STATES = [
 export default function RegisterPage() {
   const [role, setRole] = useState<"candidate" | "recruiter">("candidate");
   const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("role") === "recruiter") {
+      setRole("recruiter");
+    }
+  }, []);
 
   const {
     register,
@@ -249,7 +256,7 @@ export default function RegisterPage() {
 
           <div className="mt-8 text-center text-sm text-slate-600">
             Already have an account?{" "}
-            <Link href="/login" className="font-semibold text-primary hover:underline">
+            <Link href={`/login?role=${role}`} className="font-semibold text-primary hover:underline">
                Sign in
             </Link>
           </div>

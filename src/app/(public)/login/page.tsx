@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -19,6 +19,13 @@ const loginSchema = z.object({
 export default function LoginPage() {
   const [role, setRole] = useState<"candidate" | "recruiter">("candidate");
   const router = useRouter();
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("role") === "recruiter") {
+      setRole("recruiter");
+    }
+  }, []);
   
   const {
     register,
@@ -155,7 +162,7 @@ export default function LoginPage() {
 
           <div className="mt-8 text-center text-sm text-slate-600">
             Don't have an account?{" "}
-            <Link href="/register" className="font-semibold text-primary hover:underline">
+            <Link href={`/register?role=${role}`} className="font-semibold text-primary hover:underline">
               Create an account
             </Link>
           </div>
