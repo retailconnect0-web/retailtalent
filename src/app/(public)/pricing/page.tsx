@@ -38,8 +38,8 @@ export default function SalesTrainingPage() {
     e.preventDefault();
     if (!selectedTraining) return;
 
-    // Admin WhatsApp Number (Replace with the actual business number)
-    const adminPhone = "919999999999"; 
+    // Admin WhatsApp Number
+    const adminPhone = "919986698096"; 
     
     const text = `Hello, I would like to register for the Sales Training:%0A%0A*Training:* ${selectedTraining.title}%0A*Date:* ${selectedTraining.date || 'TBD'}%0A*Location:* ${selectedTraining.location}%0A%0A*My Details:*%0AName: ${name}%0APhone: ${phone}%0AEmail: ${email}`;
     
