@@ -10,6 +10,7 @@ export default function AdminSalesTrainingPage() {
   const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [capacity, setCapacity] = useState("");
+  const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,6 +26,7 @@ export default function AdminSalesTrainingPage() {
       setDate("");
       setLocation("");
       setCapacity("");
+      setPrice("");
       setDescription("");
     } catch (err) {
       toast.error("Failed to create training.");
@@ -61,7 +63,7 @@ export default function AdminSalesTrainingPage() {
               <input required type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Advanced FMCG Sales Techniques" className={inputClass} />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <label className={labelClass}><Calendar className="w-4 h-4 inline mr-1" /> Date</label>
                 <input required type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
@@ -75,6 +77,11 @@ export default function AdminSalesTrainingPage() {
               <div>
                 <label className={labelClass}><Users className="w-4 h-4 inline mr-1" /> Capacity</label>
                 <input required type="number" value={capacity} onChange={e => setCapacity(e.target.value)} placeholder="e.g. 50" className={inputClass} />
+              </div>
+
+              <div>
+                <label className={labelClass}>Price (₹)</label>
+                <input required type="number" value={price} onChange={e => setPrice(e.target.value)} placeholder="e.g. 500 or 0 for free" className={inputClass} />
               </div>
             </div>
 
