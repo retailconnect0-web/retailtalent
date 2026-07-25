@@ -11,114 +11,18 @@ import { toast } from "sonner";
 import { getFirebaseAuth } from "@/lib/firebase/config";
 import Link from "next/link";
 
-const FilterContent = () => (
-  <div className="space-y-6">
-    {/* Filter Header */}
-    <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-      <h3 className="font-bold text-slate-900">All Filters</h3>
-      <span className="text-sm font-semibold text-blue-600 cursor-pointer">Applied (2)</span>
-    </div>
-
-    {/* Department */}
-    <div>
-      <div className="flex items-center justify-between mb-3 cursor-pointer">
-        <h4 className="font-bold text-[15px] text-slate-900">Department</h4>
-        <ChevronUp className="w-4 h-4 text-slate-400" />
-      </div>
-      <div className="space-y-3">
-        {[
-          { label: 'Production, Manuf...', count: '7932', checked: true },
-          { label: 'Construction & Sit...', count: '3555', checked: true },
-          { label: 'Engineering - Soft...', count: '29524', checked: false },
-          { label: 'Sales & Business D...', count: '20722', checked: false }
-        ].map(dept => (
-          <label key={dept.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
-            <input 
-              type="checkbox" 
-              checked={dept.checked}
-              readOnly
-              className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
-            />
-            <span className="group-hover:text-blue-600 transition-colors flex-1">{dept.label}</span>
-            <span className="text-slate-400 text-xs">({dept.count})</span>
-          </label>
-        ))}
-        <span className="text-sm font-medium text-blue-600 cursor-pointer hover:underline mt-2 inline-block">View More</span>
-      </div>
-    </div>
-
-    {/* Experience */}
-    <div className="pt-4 border-t border-slate-100">
-      <div className="flex items-center justify-between mb-4 cursor-pointer">
-        <h4 className="font-bold text-[15px] text-slate-900">Experience</h4>
-        <ChevronUp className="w-4 h-4 text-slate-400" />
-      </div>
-      <div className="px-2 pb-6">
-        <div className="relative h-1 bg-slate-200 rounded-full w-full">
-          <div className="absolute top-0 left-0 h-1 bg-slate-900 rounded-full w-full"></div>
-          <div className="absolute top-1/2 -translate-y-1/2 right-0 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center text-[10px] text-white font-bold cursor-pointer">
-            Any
-          </div>
-        </div>
-        <div className="flex justify-between mt-4 text-xs text-slate-500 font-medium">
-          <span>0 Yrs</span>
-          <span>Any</span>
-        </div>
-      </div>
-    </div>
-    
-    {/* Salary */}
-    <div className="pt-4 border-t border-slate-100">
-      <div className="flex items-center justify-between mb-3 cursor-pointer">
-        <h4 className="font-bold text-[15px] text-slate-900">Salary</h4>
-        <ChevronUp className="w-4 h-4 text-slate-400" />
-      </div>
-      <div className="space-y-3">
-        {[
-          { label: '0-3 Lakhs', count: '4222' },
-          { label: '3-6 Lakhs', count: '6996' },
-          { label: '6-10 Lakhs', count: '4492' },
-          { label: '10-15 Lakhs', count: '2159' }
-        ].map(salary => (
-          <label key={salary.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
-            <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
-            <span className="group-hover:text-blue-600 transition-colors flex-1">{salary.label}</span>
-            <span className="text-slate-400 text-xs">({salary.count})</span>
-          </label>
-        ))}
-        <span className="text-sm font-medium text-blue-600 cursor-pointer hover:underline mt-2 inline-block">View More</span>
-      </div>
-    </div>
-
-    {/* Location */}
-    <div className="pt-4 border-t border-slate-100">
-      <div className="flex items-center justify-between mb-3 cursor-pointer">
-        <h4 className="font-bold text-[15px] text-slate-900">Location</h4>
-        <ChevronUp className="w-4 h-4 text-slate-400" />
-      </div>
-      <div className="space-y-3">
-        {[
-          { label: 'Bengaluru', count: '1266' },
-          { label: 'Mumbai', count: '890' },
-          { label: 'Pune', count: '754' }
-        ].map(loc => (
-          <label key={loc.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
-            <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
-            <span className="group-hover:text-blue-600 transition-colors flex-1">{loc.label}</span>
-            <span className="text-slate-400 text-xs">({loc.count})</span>
-          </label>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
 export default function JobsPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isApplyingForId, setIsApplyingForId] = useState<string | null>(null);
   const [appliedJobIds, setAppliedJobIds] = useState<string[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
+
+  // Filter States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDepts, setSelectedDepts] = useState<string[]>([]);
+  const [selectedSalaries, setSelectedSalaries] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
 
   useEffect(() => {
     let unsubscribe: any;
@@ -198,16 +102,154 @@ export default function JobsPage() {
     return `${days} days ago`;
   };
 
+  // Toggle helpers
+  const toggleSelection = (setter: React.Dispatch<React.SetStateAction<string[]>>, val: string) => {
+    setter(prev => prev.includes(val) ? prev.filter(x => x !== val) : [...prev, val]);
+  };
+
+  const filteredJobs = jobs.filter(job => {
+    // 1. Search Query
+    if (searchQuery.trim() !== "") {
+      const q = searchQuery.toLowerCase();
+      const match = job.title.toLowerCase().includes(q) || 
+                    job.companyName.toLowerCase().includes(q) || 
+                    (job.skills && job.skills.toLowerCase().includes(q)) ||
+                    job.location.toLowerCase().includes(q);
+      if (!match) return false;
+    }
+
+    // 2. Department
+    if (selectedDepts.length > 0) {
+      if (!job.categories || !selectedDepts.some(d => job.categories!.includes(d))) return false;
+    }
+
+    // 3. Salary
+    if (selectedSalaries.length > 0) {
+      if (!selectedSalaries.some(s => job.salary.includes(s))) return false;
+    }
+
+    // 4. Location
+    if (selectedLocations.length > 0) {
+      if (!selectedLocations.some(l => job.location.toLowerCase().includes(l.toLowerCase()))) return false;
+    }
+
+    return true;
+  });
+
+  const FilterContentComponent = () => {
+    const activeFiltersCount = selectedDepts.length + selectedSalaries.length + selectedLocations.length + (searchQuery ? 1 : 0);
+
+    const clearFilters = () => {
+      setSelectedDepts([]);
+      setSelectedSalaries([]);
+      setSelectedLocations([]);
+      setSearchQuery("");
+    };
+
+    return (
+      <div className="space-y-6">
+        {/* Filter Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 className="font-bold text-slate-900">All Filters</h3>
+          {activeFiltersCount > 0 && (
+            <span onClick={clearFilters} className="text-sm font-semibold text-blue-600 cursor-pointer">Clear All</span>
+          )}
+        </div>
+
+        {/* Department */}
+        <div>
+          <div className="flex items-center justify-between mb-3 cursor-pointer">
+            <h4 className="font-bold text-[15px] text-slate-900">Department</h4>
+            <ChevronUp className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: 'Retail Sales' },
+              { label: 'Merchandising' },
+              { label: 'Store Management' },
+              { label: 'Customer Service' }
+            ].map(dept => (
+              <label key={dept.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedDepts.includes(dept.label)}
+                  onChange={() => toggleSelection(setSelectedDepts, dept.label)}
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                />
+                <span className="group-hover:text-blue-600 transition-colors flex-1">{dept.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        
+        {/* Salary */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between mb-3 cursor-pointer">
+            <h4 className="font-bold text-[15px] text-slate-900">Salary</h4>
+            <ChevronUp className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: '10,000 - 15,000' },
+              { label: '15,000 - 25,000' },
+              { label: '25,000 - 40,000' },
+              { label: '40,000+' }
+            ].map(salary => (
+              <label key={salary.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedSalaries.includes(salary.label)}
+                  onChange={() => toggleSelection(setSelectedSalaries, salary.label)}
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                />
+                <span className="group-hover:text-blue-600 transition-colors flex-1">{salary.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Location */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between mb-3 cursor-pointer">
+            <h4 className="font-bold text-[15px] text-slate-900">Location</h4>
+            <ChevronUp className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: 'Bengaluru' },
+              { label: 'Mumbai' },
+              { label: 'Pune' },
+              { label: 'Delhi' },
+              { label: 'Hyderabad' }
+            ].map(loc => (
+              <label key={loc.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedLocations.includes(loc.label)}
+                  onChange={() => toggleSelection(setSelectedLocations, loc.label)}
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                />
+                <span className="group-hover:text-blue-600 transition-colors flex-1">{loc.label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="pt-28 pb-16 min-h-screen bg-[#f8f9fa]">
       <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
         
-        {/* Top Search Bar mimicking Naukri */}
+        {/* Top Search Bar */}
         <div className="bg-white rounded-full p-2 mb-8 flex items-center shadow-sm border border-slate-200">
           <Search className="w-5 h-5 text-slate-400 ml-4 shrink-0" />
           <input 
             type="text" 
-            placeholder="Search jobs by Skills, Designation, Role" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search jobs by Skills, Designation, Role or Location" 
             className="w-full bg-transparent border-none outline-none text-slate-700 px-4 py-3"
           />
           <Button className="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white rounded-full px-10 h-12 text-base font-semibold">Search</Button>
@@ -224,13 +266,13 @@ export default function JobsPage() {
                 <ChevronDown className="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
               </summary>
               <div className="p-4 pt-0 border-t border-slate-100 mt-2">
-                <FilterContent />
+                <FilterContentComponent />
               </div>
             </details>
 
             {/* Desktop Filter Sidebar */}
             <div className="hidden lg:block bg-white border border-slate-200 rounded-2xl p-5 shadow-sm sticky top-28">
-              <FilterContent />
+              <FilterContentComponent />
             </div>
           </div>
 
@@ -239,7 +281,7 @@ export default function JobsPage() {
             
             <div className="flex items-center justify-between px-1 mb-2">
               <span className="text-[13px] font-semibold text-slate-600">
-                {loadingJobs ? "Searching..." : `Showing ${jobs.length} Job${jobs.length === 1 ? '' : 's'}`}
+                {loadingJobs ? "Searching..." : `Showing ${filteredJobs.length} Job${filteredJobs.length === 1 ? '' : 's'}`}
               </span>
               <span className="text-[13px] text-slate-500 cursor-pointer flex items-center gap-1">Sort by: <b>Relevance</b> <ChevronDown className="w-3 h-3" /></span>
             </div>
@@ -249,8 +291,8 @@ export default function JobsPage() {
                 <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-4" />
                 <p className="text-slate-500">Loading jobs...</p>
               </div>
-            ) : jobs.length > 0 ? (
-              jobs.map((job) => (
+            ) : filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
                 <div key={job.id} className="border border-slate-200 rounded-2xl p-5 bg-white shadow-sm hover:shadow-md transition-shadow cursor-pointer">
                   <div className="flex justify-between items-start mb-4">
                     <div>
@@ -336,10 +378,8 @@ export default function JobsPage() {
                   <SearchX className="w-8 h-8 text-slate-400" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">No Jobs Found</h3>
-                <p className="text-slate-500 mb-6 max-w-sm">There are currently no active job listings. Check back later or adjust your filters.</p>
-                <Link href="/register">
-                  <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">Sign Up for Job Alerts</Button>
-                </Link>
+                <p className="text-slate-500 mb-6 max-w-sm">There are currently no active job listings matching your filters. Adjust your filters or try a different search.</p>
+                <Button variant="outline" onClick={() => {setSearchQuery(""); setSelectedDepts([]); setSelectedSalaries([]); setSelectedLocations([]);}} className="text-blue-600 border-blue-200 hover:bg-blue-50">Clear All Filters</Button>
               </div>
             )}
 
