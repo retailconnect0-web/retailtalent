@@ -164,10 +164,10 @@ export default function JobsPage() {
           </div>
           <div className="space-y-3">
             {[
-              { label: 'Retail Sales' },
-              { label: 'Merchandising' },
-              { label: 'Store Management' },
-              { label: 'Customer Service' }
+              { label: 'Production, Manufacturing' },
+              { label: 'Construction & Site' },
+              { label: 'Engineering - Software' },
+              { label: 'Sales & Business Development' }
             ].map(dept => (
               <label key={dept.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
                 <input 

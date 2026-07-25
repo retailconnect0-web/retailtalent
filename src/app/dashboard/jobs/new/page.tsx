@@ -231,17 +231,20 @@ export default function PostNewJobPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">Categories / Tags</label>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Department</label>
             <div className="relative">
               <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
+              <select
                 {...register("categories")}
-                type="text"
-                placeholder="e.g. Retail, Management, Store Operations"
-                className={inputClass}
-              />
+                className={`${inputClass} appearance-none pr-4 cursor-pointer`}
+              >
+                <option value="">Select a department...</option>
+                <option value="Production, Manufacturing">Production, Manufacturing</option>
+                <option value="Construction & Site">Construction & Site</option>
+                <option value="Engineering - Software">Engineering - Software</option>
+                <option value="Sales & Business Development">Sales & Business Development</option>
+              </select>
             </div>
-            <p className="text-xs text-slate-500 mt-1 ml-1">Helps candidates filter for this job. Separate with commas.</p>
             {errors.categories && <p className="text-red-500 text-sm mt-1 ml-1">{errors.categories.message}</p>}
           </div>
 
