@@ -75,7 +75,7 @@ export function Navbar() {
             Hire Staff
           </Link>
           <Link href="/pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-            Pricing
+            Sales Training
           </Link>
           <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
             About Us
@@ -136,7 +136,7 @@ export function Navbar() {
             Hire Staff
           </Link>
           <Link href="/pricing" className="text-base font-medium p-2 hover:bg-muted rounded-md" onClick={() => setIsMobileMenuOpen(false)}>
-            Pricing
+            Sales Training
           </Link>
           <div className="flex flex-col gap-2 pt-4 border-t border-border">
             {user ? (
