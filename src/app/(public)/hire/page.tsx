@@ -31,8 +31,15 @@ export default function HirePage() {
         setSuccessMsg("Password reset email sent! Please check your inbox.");
         setIsForgotPassword(false);
       } else if (isLogin) {
-        await userService.login(email, password);
-        router.push("/dashboard");
+        const userProfile = await userService.login(email, password);
+        if (userProfile && userProfile.role === 'candidate') {
+          setErrorMsg("This login page is for companies/recruiters. Please use the candidate login page instead.");
+          await userService.logout();
+        } else if (userProfile && userProfile.role === 'admin') {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       } else {
         const fullName = `${firstName} ${lastName}`;
         await userService.registerRecruiter(email, password, fullName, companyName, "", "", "");
