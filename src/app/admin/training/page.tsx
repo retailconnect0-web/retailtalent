@@ -47,9 +47,9 @@ export default function AdminSalesTrainingPage() {
 
   const handleEdit = (t: Training) => {
     setTitle(t.title);
-    setDate(t.date);
+    setDate(t.date || "");
     setLocation(t.location);
-    setCapacity(t.capacity.toString());
+    setCapacity(t.capacity ? t.capacity.toString() : "");
     setPrice(t.price.toString());
     setDescription(t.description);
     setIsEditing(true);
@@ -74,14 +74,15 @@ export default function AdminSalesTrainingPage() {
     setLoading(true);
 
     try {
-      const payload = {
+      const payload: Partial<Training> = {
         title,
-        date,
         location,
-        capacity: Number(capacity),
         price: Number(price),
         description
       };
+      
+      if (date) payload.date = date;
+      if (capacity) payload.capacity = Number(capacity);
 
       if (isEditing && editingId) {
         await trainingService.updateTraining(editingId, payload);
@@ -93,8 +94,9 @@ export default function AdminSalesTrainingPage() {
       
       resetForm();
       fetchTrainings();
-    } catch (err) {
-      toast.error(isEditing ? "Failed to update training." : "Failed to create training.");
+    } catch (err: any) {
+      console.error("Training Form Error:", err);
+      toast.error(isEditing ? "Failed to update training." : "Failed to create training. See console.");
     } finally {
       setLoading(false);
     }
@@ -137,8 +139,8 @@ export default function AdminSalesTrainingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
-                <label className={labelClass}><Calendar className="w-4 h-4 inline mr-1" /> Date</label>
-                <input required type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
+                <label className={labelClass}><Calendar className="w-4 h-4 inline mr-1" /> Date (Optional)</label>
+                <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
               </div>
               
               <div>
@@ -147,8 +149,8 @@ export default function AdminSalesTrainingPage() {
               </div>
               
               <div>
-                <label className={labelClass}><Users className="w-4 h-4 inline mr-1" /> Capacity</label>
-                <input required type="number" value={capacity} onChange={e => setCapacity(e.target.value)} placeholder="e.g. 50" className={inputClass} />
+                <label className={labelClass}><Users className="w-4 h-4 inline mr-1" /> Capacity (Optional)</label>
+                <input type="number" value={capacity} onChange={e => setCapacity(e.target.value)} placeholder="e.g. 50" className={inputClass} />
               </div>
 
               <div>
@@ -206,9 +208,9 @@ export default function AdminSalesTrainingPage() {
                   <div className="flex-1">
                     <h3 className="text-white font-bold text-lg mb-1">{t.title}</h3>
                     <div className="flex flex-wrap gap-4 text-sm text-slate-400">
-                      <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {t.date}</span>
+                      {t.date && <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {t.date}</span>}
                       <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {t.location}</span>
-                      <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {t.capacity} seats</span>
+                      {t.capacity ? <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {t.capacity} seats</span> : <span className="flex items-center gap-1"><Users className="w-4 h-4" /> Open</span>}
                       <span className="font-bold text-emerald-500">₹{t.price}</span>
                     </div>
                   </div>

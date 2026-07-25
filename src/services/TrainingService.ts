@@ -3,9 +3,9 @@ import { getFirebaseDb } from "@/lib/firebase/config";
 export interface Training {
   id?: string;
   title: string;
-  date: string;
+  date?: string;
   location: string;
-  capacity: number;
+  capacity?: number;
   price: number;
   description: string;
   createdAt?: string;

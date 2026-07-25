@@ -62,17 +62,24 @@ export default function SalesTrainingPage() {
                   </p>
 
                   <div className="space-y-3 text-sm text-slate-600">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-emerald-500" />
-                      <span>{new Date(training.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                    </div>
+                    {training.date ? (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-emerald-500" />
+                        <span>{new Date(training.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-4 h-4 text-emerald-500" />
+                        <span>Date TBD</span>
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-emerald-500" />
                       <span>{training.location}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-emerald-500" />
-                      <span>Capacity: {training.capacity}</span>
+                      <span>{training.capacity ? `Capacity: ${training.capacity}` : 'Open Capacity'}</span>
                     </div>
                   </div>
                 </div>
