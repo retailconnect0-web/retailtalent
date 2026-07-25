@@ -172,7 +172,16 @@ export default function JobsPage() {
       // Perform the application
       await applicationService.createApplication(job.id, currentUser.uid, job.companyId);
       setAppliedJobIds(prev => [...prev, job.id]);
-      toast.success("Successfully applied for the job!");
+      toast.success("Successfully applied for the job! Redirecting to WhatsApp...");
+      
+      // Admin WhatsApp Number
+      const adminPhone = "919986698096"; 
+      
+      const text = `Hello, I have just applied for a job via the portal:%0A%0A*Job Details:*%0ATitle: ${job.title}%0ACompany: ${job.companyName}%0A%0A*My Details:*%0AName: ${currentUser.fullName || "Candidate"}%0AEmail: ${currentUser.email}`;
+      
+      const whatsappUrl = `https://wa.me/${adminPhone}?text=${text}`;
+      window.open(whatsappUrl, '_blank');
+      
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Failed to apply.");
