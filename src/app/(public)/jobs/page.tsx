@@ -21,27 +21,28 @@ export default function JobsPage() {
   // Filter States
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepts, setSelectedDepts] = useState<string[]>([]);
+  const [selectedTitles, setSelectedTitles] = useState<string[]>([]);
   const [selectedSalaries, setSelectedSalaries] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
 
   useEffect(() => {
     let unsubscribe: any;
-      const initAuth = async () => {
-        const { onAuthStateChanged } = await import("firebase/auth");
-        const auth = await getFirebaseAuth();
-        unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const profile = await userService.getCurrentUser();
-        setUserProfile(profile);
-        if (profile) {
-          const ids = await applicationService.getAppliedJobIdsForCandidate(profile.uid);
-          setAppliedJobIds(ids);
+    const initAuth = async () => {
+      const { onAuthStateChanged } = await import("firebase/auth");
+      const auth = await getFirebaseAuth();
+      unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const profile = await userService.getCurrentUser();
+          setUserProfile(profile);
+          if (profile) {
+            const ids = await applicationService.getAppliedJobIdsForCandidate(profile.uid);
+            setAppliedJobIds(ids);
+          }
+        } else {
+          setUserProfile(null);
+          setAppliedJobIds([]);
         }
-      } else {
-        setUserProfile(null);
-        setAppliedJobIds([]);
-      }
-    });
+      });
     }; initAuth(); return () => { if (unsubscribe) unsubscribe(); };
   }, []);
 
@@ -68,19 +69,15 @@ export default function JobsPage() {
     try {
       let currentUser = userProfile;
       if (!currentUser) {
-        // Not logged in, sign in with Google
         currentUser = await userService.signInWithGoogleCandidate();
         setUserProfile(currentUser);
       }
       
-      // Perform the application
       await applicationService.createApplication(job.id, currentUser.uid, job.companyId);
       setAppliedJobIds(prev => [...prev, job.id]);
-      toast.success("Successfully applied for the job! Redirecting to WhatsApp...");
+      toast.success("Successfully applied! Redirecting to WhatsApp...");
       
-      // Admin WhatsApp Number
       const adminPhone = "919986698096"; 
-      
       const text = `Hello, I have just applied for a job via the portal:%0A%0A*Job Details:*%0ATitle: ${job.title}%0ACompany: ${job.companyName}%0A%0A*My Details:*%0AName: ${currentUser.fullName || "Candidate"}%0AEmail: ${currentUser.email}`;
       
       const whatsappUrl = `https://wa.me/${adminPhone}?text=${text}`;
@@ -95,6 +92,7 @@ export default function JobsPage() {
   };
 
   const formatDate = (isoString: string) => {
+    if (!isoString) return "Recently";
     const diff = new Date().getTime() - new Date(isoString).getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     if (days === 0) return "Today";
@@ -113,46 +111,61 @@ export default function JobsPage() {
       const q = searchQuery.toLowerCase();
       const match = job.title.toLowerCase().includes(q) || 
                     job.companyName.toLowerCase().includes(q) || 
-                    (job.skills && job.skills.toLowerCase().includes(q)) ||
-                    job.location.toLowerCase().includes(q);
+                    (job.skills && job.skills.some(s => s.toLowerCase().includes(q))) ||
+                    (job.city && job.city.toLowerCase().includes(q));
       if (!match) return false;
     }
 
     // 2. Department
     if (selectedDepts.length > 0) {
-      if (!job.categories || !selectedDepts.some(d => job.categories!.includes(d))) return false;
+      if (!selectedDepts.includes(job.experienceDepartment)) return false;
     }
 
-    // 3. Salary
+    // 3. Job Title
+    if (selectedTitles.length > 0) {
+      if (!selectedTitles.includes(job.title)) return false;
+    }
+
+    // 4. Salary
     if (selectedSalaries.length > 0) {
-      if (!selectedSalaries.some(s => job.salary.includes(s))) return false;
+      const salaryMatch = selectedSalaries.some(range => {
+         if (range === 'Below ₹10,000') return job.salaryCost < 10000;
+         if (range === '₹10,000 - ₹20,000') return job.salaryCost >= 10000 && job.salaryCost <= 20000;
+         if (range === '₹20,000 - ₹30,000') return job.salaryCost > 20000 && job.salaryCost <= 30000;
+         if (range === 'Above ₹30,000') return job.salaryCost > 30000;
+         return false;
+      });
+      if (!salaryMatch) return false;
     }
 
-    // 4. Location
+    // 5. Location
     if (selectedLocations.length > 0) {
-      if (!selectedLocations.some(l => job.location.toLowerCase().includes(l.toLowerCase()))) return false;
+      if (!job.city || !selectedLocations.some(l => job.city.toLowerCase().includes(l.toLowerCase()))) return false;
     }
 
     return true;
   });
 
+  // Dynamically extract unique cities from active jobs for the location filter
+  const uniqueCities = Array.from(new Set(jobs.map(j => j.city).filter(Boolean))).sort();
+
   const FilterContentComponent = () => {
-    const activeFiltersCount = selectedDepts.length + selectedSalaries.length + selectedLocations.length + (searchQuery ? 1 : 0);
+    const activeFiltersCount = selectedDepts.length + selectedTitles.length + selectedSalaries.length + selectedLocations.length + (searchQuery ? 1 : 0);
 
     const clearFilters = () => {
       setSelectedDepts([]);
+      setSelectedTitles([]);
       setSelectedSalaries([]);
       setSelectedLocations([]);
       setSearchQuery("");
     };
 
     return (
-      <div className="space-y-6">
-        {/* Filter Header */}
+      <div className="space-y-6 max-h-[80vh] overflow-y-auto pr-2">
         <div className="flex items-center justify-between pb-4 border-b border-slate-100">
           <h3 className="font-bold text-slate-900">All Filters</h3>
           {activeFiltersCount > 0 && (
-            <span onClick={clearFilters} className="text-sm font-semibold text-blue-600 cursor-pointer">Clear All</span>
+            <span onClick={clearFilters} className="text-sm font-semibold text-blue-600 cursor-pointer hover:underline">Clear All</span>
           )}
         </div>
 
@@ -164,19 +177,39 @@ export default function JobsPage() {
           </div>
           <div className="space-y-3">
             {[
-              { label: 'Production, Manufacturing' },
-              { label: 'Construction & Site' },
-              { label: 'Engineering - Software' },
-              { label: 'Sales & Business Development' }
+              "Alco-Beverage", "Food", "Non-Food", "Cosmetic", "Telecom", "Apparel"
             ].map(dept => (
-              <label key={dept.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+              <label key={dept} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
                 <input 
                   type="checkbox" 
-                  checked={selectedDepts.includes(dept.label)}
-                  onChange={() => toggleSelection(setSelectedDepts, dept.label)}
+                  checked={selectedDepts.includes(dept)}
+                  onChange={() => toggleSelection(setSelectedDepts, dept)}
                   className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
                 />
-                <span className="group-hover:text-blue-600 transition-colors flex-1">{dept.label}</span>
+                <span className="group-hover:text-blue-600 transition-colors flex-1">{dept}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Job Title */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="flex items-center justify-between mb-3 cursor-pointer">
+            <h4 className="font-bold text-[15px] text-slate-900">Job Title</h4>
+            <ChevronUp className="w-4 h-4 text-slate-400" />
+          </div>
+          <div className="space-y-3">
+            {[
+              "Promoter", "Merchandiser", "Sales Representative"
+            ].map(title => (
+              <label key={title} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedTitles.includes(title)}
+                  onChange={() => toggleSelection(setSelectedTitles, title)}
+                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                />
+                <span className="group-hover:text-blue-600 transition-colors flex-1">{title}</span>
               </label>
             ))}
           </div>
@@ -185,53 +218,51 @@ export default function JobsPage() {
         {/* Salary */}
         <div className="pt-4 border-t border-slate-100">
           <div className="flex items-center justify-between mb-3 cursor-pointer">
-            <h4 className="font-bold text-[15px] text-slate-900">Salary</h4>
+            <h4 className="font-bold text-[15px] text-slate-900">Salary Scale</h4>
             <ChevronUp className="w-4 h-4 text-slate-400" />
           </div>
           <div className="space-y-3">
             {[
-              { label: '10,000 - 15,000' },
-              { label: '15,000 - 25,000' },
-              { label: '25,000 - 40,000' },
-              { label: '40,000+' }
+              'Below ₹10,000',
+              '₹10,000 - ₹20,000',
+              '₹20,000 - ₹30,000',
+              'Above ₹30,000'
             ].map(salary => (
-              <label key={salary.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+              <label key={salary} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
                 <input 
                   type="checkbox" 
-                  checked={selectedSalaries.includes(salary.label)}
-                  onChange={() => toggleSelection(setSelectedSalaries, salary.label)}
+                  checked={selectedSalaries.includes(salary)}
+                  onChange={() => toggleSelection(setSelectedSalaries, salary)}
                   className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
                 />
-                <span className="group-hover:text-blue-600 transition-colors flex-1">{salary.label}</span>
+                <span className="group-hover:text-blue-600 transition-colors flex-1">{salary}</span>
               </label>
             ))}
           </div>
         </div>
 
-        {/* Location */}
+        {/* Location (City) */}
         <div className="pt-4 border-t border-slate-100">
           <div className="flex items-center justify-between mb-3 cursor-pointer">
-            <h4 className="font-bold text-[15px] text-slate-900">Location</h4>
+            <h4 className="font-bold text-[15px] text-slate-900">Location (City)</h4>
             <ChevronUp className="w-4 h-4 text-slate-400" />
           </div>
           <div className="space-y-3">
-            {[
-              { label: 'Bengaluru' },
-              { label: 'Mumbai' },
-              { label: 'Pune' },
-              { label: 'Delhi' },
-              { label: 'Hyderabad' }
-            ].map(loc => (
-              <label key={loc.label} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  checked={selectedLocations.includes(loc.label)}
-                  onChange={() => toggleSelection(setSelectedLocations, loc.label)}
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
-                />
-                <span className="group-hover:text-blue-600 transition-colors flex-1">{loc.label}</span>
-              </label>
-            ))}
+            {uniqueCities.length > 0 ? (
+              uniqueCities.map(city => (
+                <label key={city} className="flex items-center gap-3 text-sm text-slate-700 cursor-pointer group">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedLocations.includes(city)}
+                    onChange={() => toggleSelection(setSelectedLocations, city)}
+                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                  />
+                  <span className="group-hover:text-blue-600 transition-colors flex-1">{city}</span>
+                </label>
+              ))
+            ) : (
+              <p className="text-sm text-slate-400">No active cities available.</p>
+            )}
           </div>
         </div>
       </div>
@@ -249,7 +280,7 @@ export default function JobsPage() {
             type="text" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search jobs by Skills, Designation, Role or Location" 
+            placeholder="Search jobs by Title, Skills, Company or Location" 
             className="w-full bg-transparent border-none outline-none text-slate-700 px-4 py-3"
           />
           <Button className="hidden sm:flex bg-blue-600 hover:bg-blue-700 text-white rounded-full px-10 h-12 text-base font-semibold">Search</Button>
@@ -262,7 +293,12 @@ export default function JobsPage() {
             {/* Mobile Filter Toggle */}
             <details className="lg:hidden bg-white border border-slate-200 rounded-xl mb-6 shadow-sm group">
               <summary className="font-semibold flex items-center justify-between p-4 cursor-pointer list-none">
-                <span className="text-slate-800">All Filters</span>
+                <span className="text-slate-800 flex items-center gap-2">
+                  All Filters 
+                  {(selectedDepts.length + selectedTitles.length + selectedSalaries.length + selectedLocations.length) > 0 && (
+                    <span className="bg-blue-100 text-blue-600 text-xs px-2 py-0.5 rounded-full">Active</span>
+                  )}
+                </span>
                 <ChevronDown className="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" />
               </summary>
               <div className="p-4 pt-0 border-t border-slate-100 mt-2">
@@ -301,12 +337,12 @@ export default function JobsPage() {
                         <span className="font-medium">{job.companyName}</span>
                       </div>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-2">
-                        {job.experienceLevel && <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4 text-slate-400" /> {job.experienceLevel}</span>}
-                        <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-slate-400" /> {job.location}</span>
-                        <span className="flex items-center gap-1.5 text-slate-500 text-xs bg-slate-100 px-2 py-0.5 rounded-full">{job.type}</span>
+                        {job.experienceDepartment && <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4 text-slate-400" /> {job.experienceDepartment}</span>}
+                        <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-slate-400" /> {job.city}, {job.state}</span>
+                        <span className="flex items-center gap-1.5 text-slate-500 text-xs bg-slate-100 px-2 py-0.5 rounded-full">{job.employmentType}</span>
                       </div>
                       <div className="text-sm text-slate-600 truncate mb-1">
-                        <span className="text-slate-500">Salary:</span> {job.salary}
+                        <span className="text-slate-500">Salary:</span> ₹{job.salaryCost?.toLocaleString('en-IN')} {job.salaryType}
                       </div>
                     </div>
                     {job.companyLogoUrl ? (
@@ -320,13 +356,10 @@ export default function JobsPage() {
                     )}
                   </div>
                   
-                  {(job.skills || (job.categories && job.categories.length > 0)) && (
+                  {job.skills && job.skills.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2 mb-4">
-                      {job.skills?.split(',').map(s => s.trim()).filter(Boolean).map(skill => (
+                      {job.skills.map(skill => (
                         <span key={skill} className="text-[11px] text-slate-500 bg-slate-100 px-2 py-1 rounded-full">{skill}</span>
-                      ))}
-                      {job.categories?.map(cat => (
-                        <span key={cat} className="text-[11px] text-blue-600 bg-blue-50 px-2 py-1 rounded-full">{cat}</span>
                       ))}
                     </div>
                   )}
@@ -343,29 +376,29 @@ export default function JobsPage() {
                         const isCurrentlyApplying = isApplyingForId === job.id;
                         
                         return (
-                          <Button 
-                            size="sm" 
-                            onClick={(e) => { e.stopPropagation(); handleApply(job); }}
-                            disabled={hasApplied || isCurrentlyApplying}
-                            className={`h-8 px-4 flex items-center gap-2 font-medium transition-colors ${
-                              hasApplied 
-                                ? "bg-emerald-500 hover:bg-emerald-600 text-white opacity-100 cursor-default" 
-                                : "bg-blue-600 hover:bg-blue-700 text-white"
-                            }`}
-                          >
-                            {isCurrentlyApplying ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : !userProfile && !hasApplied ? (
-                              <LogIn className="w-3.5 h-3.5" />
-                            ) : null}
-                            {isCurrentlyApplying 
-                              ? "Applying..." 
-                              : hasApplied 
-                                ? "Applied" 
-                                : userProfile 
-                                  ? "Apply Now" 
-                                  : "Apply with Google"}
-                          </Button>
+                           <Button 
+                             size="sm" 
+                             onClick={(e) => { e.stopPropagation(); handleApply(job); }}
+                             disabled={hasApplied || isCurrentlyApplying}
+                             className={`h-8 px-4 flex items-center gap-2 font-medium transition-colors ${
+                               hasApplied 
+                                 ? "bg-emerald-500 hover:bg-emerald-600 text-white opacity-100 cursor-default" 
+                                 : "bg-blue-600 hover:bg-blue-700 text-white"
+                             }`}
+                           >
+                             {isCurrentlyApplying ? (
+                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                             ) : !userProfile && !hasApplied ? (
+                               <LogIn className="w-3.5 h-3.5" />
+                             ) : null}
+                             {isCurrentlyApplying 
+                               ? "Applying..." 
+                               : hasApplied 
+                                 ? "Applied" 
+                                 : userProfile 
+                                   ? "Apply Now" 
+                                   : "Apply with Google"}
+                           </Button>
                         );
                       })()}
                     </div>
@@ -379,7 +412,7 @@ export default function JobsPage() {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">No Jobs Found</h3>
                 <p className="text-slate-500 mb-6 max-w-sm">There are currently no active job listings matching your filters. Adjust your filters or try a different search.</p>
-                <Button variant="outline" onClick={() => {setSearchQuery(""); setSelectedDepts([]); setSelectedSalaries([]); setSelectedLocations([]);}} className="text-blue-600 border-blue-200 hover:bg-blue-50">Clear All Filters</Button>
+                <Button variant="outline" onClick={() => {setSearchQuery(""); setSelectedDepts([]); setSelectedTitles([]); setSelectedSalaries([]); setSelectedLocations([]);}} className="text-blue-600 border-blue-200 hover:bg-blue-50">Clear All Filters</Button>
               </div>
             )}
 
@@ -388,11 +421,11 @@ export default function JobsPage() {
           {/* Right Sidebar (Ads / Featured) */}
           <div className="hidden lg:flex col-span-3 flex-col gap-4">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
-              <h4 className="font-bold text-[15px] text-slate-900 mb-4">Featured Companies</h4>
+              <h4 className="font-bold text-[15px] text-slate-900 mb-4">Top Companies Hiring</h4>
               <div className="flex flex-wrap items-center gap-3">
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] font-bold text-slate-600">AWS</div>
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] font-bold text-slate-600">IBM</div>
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] font-bold text-slate-600">TCS</div>
+                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] font-bold text-slate-600">PUMA</div>
+                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] font-bold text-slate-600">L'OREAL</div>
+                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center text-[10px] font-bold text-slate-600">HUL</div>
               </div>
             </div>
           </div>
