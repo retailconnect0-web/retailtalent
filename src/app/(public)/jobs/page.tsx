@@ -10,20 +10,26 @@ import { toast } from "sonner";
 
 import { getFirebaseAuth } from "@/lib/firebase/config";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function JobsPage() {
+function JobsContent() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isApplyingForId, setIsApplyingForId] = useState<string | null>(null);
   const [appliedJobIds, setAppliedJobIds] = useState<string[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
 
+  const searchParams = useSearchParams();
+  const initQ = searchParams?.get('q') || "";
+  const initLoc = searchParams?.get('loc') || "";
+
   // Filter States
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initQ);
   const [selectedDepts, setSelectedDepts] = useState<string[]>([]);
   const [selectedTitles, setSelectedTitles] = useState<string[]>([]);
   const [selectedSalaries, setSelectedSalaries] = useState<string[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(initLoc ? [initLoc] : []);
 
   useEffect(() => {
     let unsubscribe: any;
@@ -434,5 +440,13 @@ export default function JobsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function JobsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading jobs...</div>}>
+      <JobsContent />
+    </Suspense>
   );
 }

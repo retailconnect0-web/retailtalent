@@ -3,8 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Search, ChevronDown, ChevronRight, Home, Building2, Rocket, CheckCircle2, GraduationCap, Settings, Box, Users, Award, Monitor, PieChart } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function HeroSection() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+  const [location, setLocation] = useState("");
+
   const categories = [
     { name: "Promotor", icon: Users },
     { name: "Merchendiser", icon: Box },
@@ -26,13 +32,21 @@ export function HeroSection() {
           </h1>
 
           {/* Search Bar Container */}
-          <div className="bg-white rounded-3xl md:rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-2 md:p-3 mb-12 flex flex-col md:flex-row items-center border border-slate-100 max-w-4xl mx-auto transition-all">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              router.push(`/jobs?q=${encodeURIComponent(query)}&loc=${encodeURIComponent(location)}`);
+            }}
+            className="bg-white rounded-3xl md:rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-2 md:p-3 mb-12 flex flex-col md:flex-row items-center border border-slate-100 max-w-4xl mx-auto transition-all"
+          >
             
             {/* Skills Input */}
             <div className="flex items-center flex-1 w-full px-4 py-3 md:py-0 border-b md:border-b-0 md:border-r border-slate-200">
               <Search className="w-5 h-5 text-slate-400 shrink-0" />
               <input 
                 type="text" 
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter skills / designations / companies" 
                 className="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-400 text-sm md:text-base ml-3"
               />
@@ -50,6 +64,8 @@ export function HeroSection() {
             <div className="flex items-center flex-1 w-full px-4 py-3 md:py-0">
               <input 
                 type="text" 
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 placeholder="Enter location" 
                 className="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-400 text-sm md:text-base"
               />
@@ -57,11 +73,11 @@ export function HeroSection() {
 
             {/* Search Button */}
             <div className="w-full md:w-auto mt-2 md:mt-0 px-2 md:px-0 pb-2 md:pb-0">
-              <Button className="w-full md:w-auto h-12 md:h-12 px-8 rounded-2xl md:rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base shadow-lg shadow-blue-600/25 transition-all">
+              <Button type="submit" className="w-full md:w-auto h-12 md:h-12 px-8 rounded-2xl md:rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base shadow-lg shadow-blue-600/25 transition-all">
                 Search
               </Button>
             </div>
-          </div>
+          </form>
 
           {/* Category Pills */}
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 max-w-4xl mx-auto">
