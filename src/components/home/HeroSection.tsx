@@ -22,7 +22,7 @@ export function HeroSection() {
       <div className="container mx-auto px-4 md:px-6 relative z-10 w-full">
         <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 mb-10">
-            Find your dream job now
+            Your retail career starts here!
           </h1>
 
           {/* Search Bar Container */}
