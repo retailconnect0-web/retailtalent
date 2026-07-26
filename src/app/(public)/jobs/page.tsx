@@ -109,9 +109,10 @@ export default function JobsPage() {
     // 1. Search Query
     if (searchQuery.trim() !== "") {
       const q = searchQuery.toLowerCase();
+      const skillsArray = Array.isArray(job.skills) ? job.skills : (typeof job.skills === 'string' ? (job.skills as string).split(',') : []);
       const match = job.title.toLowerCase().includes(q) || 
                     job.companyName.toLowerCase().includes(q) || 
-                    (job.skills && job.skills.some(s => s.toLowerCase().includes(q))) ||
+                    (skillsArray.length > 0 && skillsArray.some((s: string) => s.toLowerCase().includes(q))) ||
                     (job.city && job.city.toLowerCase().includes(q));
       if (!match) return false;
     }
@@ -356,10 +357,10 @@ export default function JobsPage() {
                     )}
                   </div>
                   
-                  {job.skills && job.skills.length > 0 && (
+                  {job.skills && (
                     <div className="flex flex-wrap items-center gap-2 mb-4">
-                      {job.skills.map(skill => (
-                        <span key={skill} className="text-[11px] text-slate-500 bg-slate-100 px-2 py-1 rounded-full">{skill}</span>
+                      {(Array.isArray(job.skills) ? job.skills : (typeof job.skills === 'string' ? (job.skills as string).split(',') : [])).map((skill: string) => (
+                        <span key={skill.trim()} className="text-[11px] text-slate-500 bg-slate-100 px-2 py-1 rounded-full">{skill.trim()}</span>
                       ))}
                     </div>
                   )}
