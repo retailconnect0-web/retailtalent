@@ -27,6 +27,11 @@ export default function DashboardLayout({
           const companyDetails = await userService.getCompanyDetails(currentUser.companyId);
           setCompany(companyDetails);
         }
+        
+        // Enforce profile completion
+        if (!currentUser.profileComplete && window.location.pathname !== "/dashboard/profile") {
+          router.push("/dashboard/profile");
+        }
       }
       setIsLoading(false);
     };

@@ -137,7 +137,7 @@ class UserService {
       email: user.email!,
       fullName,
       role: "recruiter",
-      profileComplete: true,
+      profileComplete: false,
       companyId: companyRef.id // Link recruiter to their new multi-tenant portal
     };
 
