@@ -14,6 +14,7 @@ const ALL_CATEGORIES = [
   "Software & IT", "Analytics"
 ];
 
+export default function DashboardOverviewPage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,9 +118,6 @@ const ALL_CATEGORIES = [
           </div>
         </div>
       </div>
-
-      </div>
-
 
     </div>
   );
