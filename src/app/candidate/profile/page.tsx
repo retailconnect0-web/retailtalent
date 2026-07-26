@@ -98,7 +98,7 @@ export default function CandidateProfilePage() {
             setMaritalStatus(userProfile.maritalStatus || "");
             setFatherName(userProfile.fatherName || "");
             setState(userProfile.state || "");
-            setCity(userProfile.city || userProfile.location || "");
+            setCity(userProfile.city || "");
             setWhatsappNumber(userProfile.whatsappNumber || userProfile.phoneNumber || "");
             setAltPhoneNumber(userProfile.altPhoneNumber || "");
             
