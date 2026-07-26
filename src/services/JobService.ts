@@ -1,20 +1,27 @@
 import { getFirebaseDb } from "@/lib/firebase/config";
 export interface Job {
   id: string;
-  title: string;
+  title: "Promoter" | "Merchandiser" | "Sales Representative" | string;
   companyId: string; 
   companyName: string;
   companyLogoUrl?: string;
-  location: string;
-  salary: string;
-  type: "Full Time" | "Part Time" | "Contract" | "Internship";
+  
+  // Location
+  state: string;
+  city: string;
+  
+  // Employment & Compensation
+  employmentType: "Full Time" | "Event Based";
+  salaryCost: number;
+  salaryType: "Per Day" | "Per Month";
+  
+  // Requirements
+  experienceDepartment: string;
+  languages: Array<{ name: string; speak: number; read: number; write: number }>;
+  skills: string[]; // e.g., ["Sampling", "Demo", "Merchandising", "Sales"]
+  
   status: "Active" | "Closed";
   postedAt: string;
-  
-  // Advanced Fields
-  skills?: string;
-  experienceLevel?: string;
-  categories?: string[]; // e.g., ["Remote", "MNC", "Startup", "HR", etc.]
 }
 
 class JobService {

@@ -109,7 +109,7 @@ export default function ManageJobsPage() {
                     <tr key={job.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                       <td className="p-4 pl-6">
                         <p className="font-bold text-slate-900">{job.title}</p>
-                        <p className="text-xs text-slate-500 mt-1">{job.location} • {job.type}</p>
+                        <p className="text-xs text-slate-500 mt-1">{job.city}, {job.state} • {job.employmentType} • ₹{job.salaryCost.toLocaleString('en-IN')} {job.salaryType}</p>
                       </td>
                       <td className="p-4">
                         <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${job.status === 'Active' ? 'text-emerald-600 bg-emerald-50' : 'text-slate-600 bg-slate-100'}`}>
