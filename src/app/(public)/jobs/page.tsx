@@ -23,10 +23,11 @@ function JobsContent() {
   const searchParams = useSearchParams();
   const initQ = searchParams?.get('q') || "";
   const initLoc = searchParams?.get('loc') || "";
+  const initDept = searchParams?.get('dept') || "";
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState(initQ);
-  const [selectedDepts, setSelectedDepts] = useState<string[]>([]);
+  const [selectedDepts, setSelectedDepts] = useState<string[]>(initDept ? [initDept] : []);
   const [selectedTitles, setSelectedTitles] = useState<string[]>([]);
   const [selectedSalaries, setSelectedSalaries] = useState<string[]>([]);
   const [selectedLocations, setSelectedLocations] = useState<string[]>(initLoc ? [initLoc] : []);

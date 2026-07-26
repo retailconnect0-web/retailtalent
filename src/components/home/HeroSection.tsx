@@ -10,6 +10,7 @@ export function HeroSection() {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
+  const [department, setDepartment] = useState("");
 
   const categories = [
     { name: "Promotor", icon: Users },
@@ -35,7 +36,11 @@ export function HeroSection() {
           <form 
             onSubmit={(e) => {
               e.preventDefault();
-              router.push(`/jobs?q=${encodeURIComponent(query)}&loc=${encodeURIComponent(location)}`);
+              const params = new URLSearchParams();
+              if (query) params.append("q", query);
+              if (location) params.append("loc", location);
+              if (department) params.append("dept", department);
+              router.push(`/jobs?${params.toString()}`);
             }}
             className="bg-white rounded-3xl md:rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-2 md:p-3 mb-12 flex flex-col md:flex-row items-center border border-slate-100 max-w-4xl mx-auto transition-all"
           >
@@ -47,17 +52,27 @@ export function HeroSection() {
                 type="text" 
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Enter skills / designations / companies" 
+                placeholder="Job title, skills, or company" 
                 className="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-400 text-sm md:text-base ml-3"
               />
             </div>
 
-            {/* Experience Dropdown (Mock) */}
-            <div className="flex items-center w-full md:w-auto px-4 py-3 md:py-0 border-b md:border-b-0 md:border-r border-slate-200 cursor-pointer group shrink-0">
-              <div className="w-full flex items-center justify-between gap-4">
-                <span className="text-slate-400 text-sm md:text-base group-hover:text-slate-600 transition-colors whitespace-nowrap">Select experience</span>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              </div>
+            {/* Department Dropdown */}
+            <div className="flex items-center w-full md:w-48 px-4 py-3 md:py-0 border-b md:border-b-0 md:border-r border-slate-200 shrink-0 relative">
+              <select 
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="w-full bg-transparent border-none outline-none text-slate-700 text-sm md:text-base appearance-none cursor-pointer"
+              >
+                <option value="">All Departments</option>
+                <option value="Alco-Beverage">Alco-Beverage</option>
+                <option value="Food">Food</option>
+                <option value="Non-Food">Non-Food</option>
+                <option value="Cosmetic">Cosmetic</option>
+                <option value="Telecom">Telecom</option>
+                <option value="Apparel">Apparel</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-4 pointer-events-none" />
             </div>
 
             {/* Location Input */}
@@ -66,7 +81,7 @@ export function HeroSection() {
                 type="text" 
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="Enter location" 
+                placeholder="Enter city" 
                 className="w-full bg-transparent border-none outline-none text-slate-700 placeholder:text-slate-400 text-sm md:text-base"
               />
             </div>
