@@ -14,16 +14,27 @@ export interface UserProfile {
   aadhaarUrl?: string;
   panUrl?: string;
   phoneNumber?: string;
+  gender?: string;
+  maritalStatus?: string;
+  fatherName?: string;
+  state?: string;
+  city?: string;
+  whatsappNumber?: string;
   altPhoneNumber?: string;
   dob?: string;
+  
+  // Education & Experience
   qualification?: string;
+  qualificationStatus?: string;
   college?: string;
-  languages?: string;
-  skills?: string; // (Sampling, Demo, Merchandising)
-  experience?: string; // (Brand / Store / Category)
-  location?: string;
-  city?: string;
-  availability?: string; // (Daily / Monthly / Event-based)
+  languages?: Array<{ name: string; speak: number; read: number; write: number }>;
+  shortBio?: string;
+  experienceCategory?: string;
+  skills?: string; 
+  candidateType?: string;
+  availability?: string; 
+  noticePeriod?: string;
+  
   rating?: number;
   totalEarnings?: number;
 }
