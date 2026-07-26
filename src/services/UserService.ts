@@ -9,6 +9,7 @@ export interface UserProfile {
   // Recruiter fields
   companyId?: string; 
   // Candidate fields
+  status?: "incomplete" | "pending_review" | "approved" | "rejected";
   resumeUrl?: string;
   photoUrl?: string;
   aadhaarUrl?: string;
@@ -238,6 +239,32 @@ class UserService {
     const { sendPasswordResetEmail } = await import("firebase/auth");
     const auth = await getFirebaseAuth();
     await sendPasswordResetEmail(auth, email);
+  }
+
+  // --- Admin Functions ---
+  async getPendingCandidates(): Promise<UserProfile[]> {
+    const { collection, query, where, getDocs } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
+    const q = query(
+      collection(db, "users"), 
+      where("role", "==", "candidate"),
+      where("status", "==", "pending_review")
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const candidates: UserProfile[] = [];
+    querySnapshot.forEach((doc) => {
+      candidates.push(doc.data() as UserProfile);
+    });
+    return candidates;
+  }
+
+  async updateCandidateStatus(uid: string, status: "approved" | "rejected"): Promise<void> {
+    const { doc, updateDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, { status });
   }
 }
 

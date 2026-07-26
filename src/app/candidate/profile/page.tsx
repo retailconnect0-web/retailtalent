@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { 
   FileText, MapPin, Briefcase, Award, Loader2, 
   Phone, Calendar, GraduationCap, Languages, 
-  Camera, UploadCloud, Edit3, Image as ImageIcon, CreditCard, Plus, Trash2
+  Camera, UploadCloud, Edit3, Image as ImageIcon, CreditCard, Plus, Trash2, CheckCircle
 } from "lucide-react";
 import Link from "next/link";
 import { getFirebaseAuth } from "@/lib/firebase/config";
@@ -185,9 +185,10 @@ export default function CandidateProfilePage() {
         whatsappNumber, altPhoneNumber,
         qualification, qualificationStatus, shortBio, languages,
         experienceCategory, skills: skills.join(", "), candidateType, availability, noticePeriod,
-        photoUrl, aadhaarUrl, panUrl
+        photoUrl, aadhaarUrl, panUrl,
+        status: profile.status === "incomplete" || !profile.status ? "pending_review" : profile.status
       });
-      toast.success("Profile saved successfully!");
+      toast.success("Profile saved! Pending HR Approval.");
       setIsEditing(false);
     } catch (error) { toast.error("Failed to save profile."); } 
     finally { setSaving(false); }
@@ -216,7 +217,14 @@ export default function CandidateProfilePage() {
     <div className="max-w-4xl mx-auto py-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">My Profile</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-slate-900">My Profile</h1>
+            {profile?.status === "approved" && profile?.aadhaarUrl && profile?.panUrl && (
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-semibold rounded-full border border-emerald-200">
+                <CheckCircle className="w-4 h-4 fill-emerald-500 text-white" /> Verified
+              </span>
+            )}
+          </div>
           <p className="text-slate-500 mt-1">{isEditing ? "Complete your profile to get noticed by top recruiters." : "Review your profile details below."}</p>
         </div>
         <div className="flex gap-4 w-full sm:w-auto">

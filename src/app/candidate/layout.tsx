@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, Search, Briefcase, User, Bell, LogOut } from "lucide-react";
+import { Home, Search, Briefcase, User, Bell, LogOut, IndianRupee, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { userService, UserProfile } from "@/services/UserService";
 import { getFirebaseAuth } from "@/lib/firebase/config";
@@ -37,6 +37,8 @@ export default function CandidateLayout({
     { href: "/candidate", label: "Dashboard", icon: Home },
     { href: "/jobs", label: "Find Jobs", icon: Search },
     { href: "/candidate/applications", label: "My Applications", icon: Briefcase },
+    { href: "/candidate/earnings", label: "Earnings", icon: IndianRupee },
+    { href: "/candidate/reviews", label: "Reviews", icon: Star },
     { href: "/candidate/profile", label: "My Profile", icon: User },
   ];
 
