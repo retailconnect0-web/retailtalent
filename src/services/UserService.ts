@@ -8,6 +8,7 @@ export interface UserProfile {
   profileComplete: boolean;
   // Recruiter fields
   companyId?: string; 
+  designation?: string;
   // Candidate fields
   status?: "incomplete" | "pending_review" | "approved" | "rejected";
   resumeUrl?: string;
@@ -42,12 +43,18 @@ export interface UserProfile {
 
 export interface CompanyProfile {
   id: string;
-  name: string;
+  name: string; // Used as Brand Name if they don't specify differently, or general display name
   state?: string;
   city?: string;
   contactPhone?: string;
   logoUrl?: string;
   createdAt?: string;
+  
+  gstName?: string; // Company Name as per GST
+  brandName?: string;
+  gstNumber?: string;
+  products?: string;
+  website?: string;
 }
 
 class UserService {
