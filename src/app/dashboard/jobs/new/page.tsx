@@ -85,7 +85,7 @@ export default function PostJobPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === "title" && (value === "Merchandiser" || value === "Sales Representative")) {
+    if (name === "title" && value === "Merchandiser") {
       setFormData((prev) => ({ ...prev, [name]: value, employmentType: "Full Time" }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -214,12 +214,12 @@ export default function PostJobPage() {
                   name="employmentType" 
                   value={formData.employmentType} 
                   onChange={handleInputChange} 
-                  className={`${inputClass} appearance-none pr-4 ${formData.title !== "Promoter" ? "opacity-60 bg-slate-200 cursor-not-allowed" : ""}`} 
+                  className={`${inputClass} appearance-none pr-4 ${formData.title === "Merchandiser" ? "opacity-60 bg-slate-200 cursor-not-allowed" : ""}`} 
                   required
-                  disabled={formData.title !== "Promoter"}
+                  disabled={formData.title === "Merchandiser"}
                 >
                   <option value="Full Time">Full Time</option>
-                  {formData.title === "Promoter" && <option value="Event Based">Event Based</option>}
+                  {formData.title !== "Merchandiser" && <option value="Event Based">Event Based</option>}
                 </select>
               </div>
             </div>
