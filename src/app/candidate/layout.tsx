@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { userService, UserProfile } from "@/services/UserService";
 import { getFirebaseAuth } from "@/lib/firebase/config";
 
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import clsx from "clsx";
 
 export default function CandidateLayout({
@@ -62,7 +62,10 @@ export default function CandidateLayout({
         
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive = link.href === "/candidate" 
+              ? pathname === link.href 
+              : pathname.startsWith(link.href);
+            
             const Icon = link.icon;
             return (
               <Link 
@@ -131,7 +134,10 @@ export default function CandidateLayout({
       {/* Mobile Bottom Navigation Bar */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex items-center justify-around z-50 px-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
         {navLinks.map((link) => {
-          const isActive = pathname === link.href;
+          const isActive = link.href === "/candidate" 
+            ? pathname === link.href 
+            : pathname.startsWith(link.href);
+          
           const Icon = link.icon;
           return (
             <Link 

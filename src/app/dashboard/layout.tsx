@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { LayoutDashboard, Briefcase, Users, MessageSquare, Settings, Bell, Search, Menu, LogOut, Building2 } from "lucide-react";
 import { userService, UserProfile } from "@/services/UserService";
@@ -12,6 +12,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [company, setCompany] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,27 +69,27 @@ export default function DashboardLayout({
         </div>
         
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-blue-50 text-blue-700 font-medium transition-colors">
+          <Link href="/dashboard" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${pathname === "/dashboard" ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
             <LayoutDashboard className="w-5 h-5" />
             Overview
           </Link>
-          <Link href="/dashboard/jobs" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          <Link href="/dashboard/jobs" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${pathname.startsWith("/dashboard/jobs") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
             <Briefcase className="w-5 h-5" />
             Jobs
           </Link>
-          <Link href="/dashboard/candidates" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          <Link href="/dashboard/candidates" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${pathname.startsWith("/dashboard/candidates") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
             <Users className="w-5 h-5" />
             Candidates
           </Link>
-          <Link href="/dashboard/messages" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          <Link href="/dashboard/messages" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${pathname.startsWith("/dashboard/messages") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
             <MessageSquare className="w-5 h-5" />
             Messages
           </Link>
-          <Link href="/dashboard/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          <Link href="/dashboard/profile" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${pathname.startsWith("/dashboard/profile") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
             <Building2 className="w-5 h-5" />
             Company Profile
           </Link>
-          <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+          <Link href="/dashboard/settings" className={`flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium transition-colors ${pathname.startsWith("/dashboard/settings") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"}`}>
             <Settings className="w-5 h-5" />
             Settings
           </Link>
