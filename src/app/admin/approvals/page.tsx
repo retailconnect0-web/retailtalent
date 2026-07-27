@@ -251,7 +251,14 @@ export default function AdminApprovalsPage() {
                       <div key={app.id} className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
                         <div className="flex justify-between items-start mb-3">
                           <div>
-                            <h4 className="font-semibold text-slate-200">{app.job?.title || "Unknown Job"}</h4>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold text-slate-200">{app.job?.title || "Unknown Job"}</h4>
+                              {app.displayId && (
+                                <span className="bg-slate-700 text-slate-300 px-1.5 py-0.5 rounded text-[10px] font-mono">
+                                  {app.displayId}
+                                </span>
+                              )}
+                            </div>
                             <p className="text-xs text-slate-400 mt-0.5">{app.job?.employmentType}</p>
                           </div>
                           <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">

@@ -80,12 +80,12 @@ function JobsContent() {
         setUserProfile(currentUser);
       }
       
-      await applicationService.createApplication(job.id, currentUser.uid, job.companyId);
+      const app = await applicationService.createApplication(job.id, currentUser.uid, job.companyId);
       setAppliedJobIds(prev => [...prev, job.id]);
       toast.success("Successfully applied! Redirecting to WhatsApp...");
       
       const adminPhone = "919986698096"; 
-      const text = `Hello, I have just applied for a job via the portal:%0A%0A*Job Details:*%0ATitle: ${job.title}%0ACompany: ${job.companyName}%0A%0A*My Details:*%0AName: ${currentUser.fullName || "Candidate"}%0AEmail: ${currentUser.email}`;
+      const text = `New Application (ID: ${app.displayId || app.id.substring(0, 6).toUpperCase()})%0A%0A*Job Details:*%0ATitle: ${job.title}%0ACompany: ${job.companyName}%0A%0A*Candidate Details:*%0AName: ${currentUser.fullName || "Candidate"}%0AEmail: ${currentUser.email}%0ALocation: ${currentUser.city || 'N/A'}, ${currentUser.state || 'N/A'}%0AExperience: ${currentUser.experienceCategory || 'N/A'}`;
       
       const whatsappUrl = `https://wa.me/${adminPhone}?text=${text}`;
       window.open(whatsappUrl, '_blank');

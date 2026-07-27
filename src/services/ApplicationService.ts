@@ -1,6 +1,7 @@
 import { getFirebaseDb } from "@/lib/firebase/config";
 export interface JobApplication {
   id: string;
+  displayId?: string;
   jobId: string;
   candidateId: string;
   companyId: string;
@@ -21,8 +22,11 @@ class ApplicationService {
       throw new Error("You have already applied for this job.");
     }
 
+    const displayId = "APP-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
     const applicationsRef = collection(db, "applications");
     const newApplicationData = {
+      displayId,
       jobId,
       candidateId,
       companyId,
