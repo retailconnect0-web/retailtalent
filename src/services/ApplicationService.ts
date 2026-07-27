@@ -5,7 +5,7 @@ export interface JobApplication {
   jobId: string;
   candidateId: string;
   companyId: string;
-  status: "Applied" | "Reviewed" | "Shortlisted" | "Rejected";
+  status: "Pending Admin Approval" | "Forwarded to Recruiter" | "Rejected by Admin" | "Applied" | "Reviewed" | "Shortlisted" | "Rejected";
   appliedAt: string;
 }
 
@@ -30,7 +30,7 @@ class ApplicationService {
       jobId,
       candidateId,
       companyId,
-      status: "Applied",
+      status: "Pending Admin Approval", // NEW Flow: starts in Pending state
       appliedAt: new Date().toISOString()
     };
     
@@ -89,6 +89,34 @@ class ApplicationService {
     });
     
     return applications;
+  }
+
+  // --- Admin Functions ---
+
+  // Get applications pending admin approval
+  async getPendingAdminApplications(): Promise<JobApplication[]> {
+    const { collection, getDocs, query, where } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
+    const applicationsRef = collection(db, "applications");
+    const q = query(applicationsRef, where("status", "==", "Pending Admin Approval"));
+    const querySnapshot = await getDocs(q);
+    
+    const applications: JobApplication[] = [];
+    querySnapshot.forEach((doc) => {
+      applications.push({ id: doc.id, ...doc.data() } as JobApplication);
+    });
+    
+    return applications;
+  }
+
+  // Update application status
+  async updateApplicationStatus(appId: string, status: string): Promise<void> {
+    const { doc, updateDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
+    const appRef = doc(db, "applications", appId);
+    await updateDoc(appRef, { status });
   }
 }
 
