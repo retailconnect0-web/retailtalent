@@ -27,8 +27,11 @@ export default function AdminLoginPage() {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hardcoded verification as requested
-        const isAdmin1 = values.email === "flyggoagency@gmail.com" && values.password === "Flyggo@8";
-        const isAdmin2 = values.email === "admin@retailtalent.com" && values.password === "Retailtalent@9";
+        const email = values.email.toLowerCase().trim();
+        const password = values.password.trim();
+        
+        const isAdmin1 = email === "flyggoagency@gmail.com" && password === "Flyggo@8";
+        const isAdmin2 = email === "admin@retailtalent.com" && password === "Retailtalent@9";
         
         if (isAdmin1 || isAdmin2) {
           toast.success("Authentication successful. Welcome, Admin.");
