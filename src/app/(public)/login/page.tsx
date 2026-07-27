@@ -96,7 +96,11 @@ export default function LoginPage() {
                     toast.success("Signed in successfully!");
                     router.push("/candidate/profile");
                   } catch (error: any) {
-                    toast.error(error.message || "Failed to sign in with Google.");
+                    let msg = error.message || "Failed to sign in with Google.";
+                    if (error.code === 'auth/cancelled-popup-request' || msg.includes('auth/cancelled-popup-request') || error.code === 'auth/popup-closed-by-user' || msg.includes('auth/popup-closed-by-user')) {
+                      msg = "Sign-in was cancelled. Please try again.";
+                    }
+                    toast.error(msg);
                   }
                 }}
                 className="w-full h-12 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 font-medium rounded-xl flex items-center justify-center gap-3 transition-all"
