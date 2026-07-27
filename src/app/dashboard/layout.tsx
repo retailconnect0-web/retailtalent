@@ -114,10 +114,7 @@ export default function DashboardLayout({
           </div>
           
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-slate-500 hover:text-slate-900 transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-            </button>
+
             
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
               <div className="text-right hidden md:block">
