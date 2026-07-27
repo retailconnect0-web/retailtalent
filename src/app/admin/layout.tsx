@@ -33,19 +33,19 @@ export default function AdminLayout({
         
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 px-2">Management</div>
-          <Link href="/admin" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-red-500/10 text-red-400 font-medium transition-colors border border-red-500/20">
+          <Link href="/admin" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname === "/admin" ? "bg-red-500/10 text-red-400 font-medium border border-red-500/20" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"}`}>
             <LayoutDashboard className="w-4 h-4" />
             Overview
           </Link>
-          <Link href="/admin/approvals" className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+          <Link href="/admin/approvals" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith("/admin/approvals") ? "bg-red-500/10 text-red-400 font-medium border border-red-500/20" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"}`}>
             <Users className="w-4 h-4" />
             Approvals
           </Link>
-          <Link href="/admin/jobs" className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+          <Link href="/admin/jobs" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith("/admin/jobs") ? "bg-red-500/10 text-red-400 font-medium border border-red-500/20" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"}`}>
             <Briefcase className="w-4 h-4" />
             Job Moderation
           </Link>
-          <Link href="/admin/training" className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+          <Link href="/admin/training" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith("/admin/training") ? "bg-red-500/10 text-red-400 font-medium border border-red-500/20" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"}`}>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3L22 4" />
             </svg>
@@ -53,7 +53,7 @@ export default function AdminLayout({
           </Link>
           
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-8 mb-4 px-2">System</div>
-          <Link href="/admin/settings" className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+          <Link href="/admin/settings" className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${pathname.startsWith("/admin/settings") ? "bg-red-500/10 text-red-400 font-medium border border-red-500/20" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"}`}>
             <Settings className="w-4 h-4" />
             Settings
           </Link>
