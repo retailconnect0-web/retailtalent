@@ -11,7 +11,9 @@ import {
   Loader2,
   Search,
   Filter,
-  MoreVertical
+  MoreVertical,
+  Pencil,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
 import { getFirebaseAuth } from "@/lib/firebase/config";
@@ -22,6 +24,17 @@ export default function ManageJobsPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState<Job[]>([]);
+
+  const handleDelete = async (jobId: string) => {
+    if (confirm("Are you sure you want to delete this job?")) {
+      try {
+        await jobService.deleteJob(jobId);
+        setJobs(jobs.filter(j => j.id !== jobId));
+      } catch (err) {
+        console.error("Failed to delete job", err);
+      }
+    }
+  };
 
   useEffect(() => {
     let unsubscribe: any;
@@ -121,9 +134,21 @@ export default function ManageJobsPage() {
                         {new Date(job.postedAt).toLocaleDateString()}
                       </td>
                       <td className="p-4 pr-6 text-right">
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/dashboard/jobs/${job.id}/edit`}>
+                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600 bg-slate-50 hover:bg-blue-50">
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleDelete(job.id)}
+                            className="text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -90,6 +90,22 @@ class JobService {
       ...newJobData
     } as Job;
   }
+
+  async updateJob(id: string, jobData: Partial<Omit<Job, "id" | "postedAt" | "companyId">>): Promise<void> {
+    const { doc, updateDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
+    const docRef = doc(db, "jobs", id);
+    await updateDoc(docRef, jobData);
+  }
+
+  async deleteJob(id: string): Promise<void> {
+    const { doc, deleteDoc } = await import("firebase/firestore");
+    const db = await getFirebaseDb();
+    
+    const docRef = doc(db, "jobs", id);
+    await deleteDoc(docRef);
+  }
 }
 
 export const jobService = new JobService();
