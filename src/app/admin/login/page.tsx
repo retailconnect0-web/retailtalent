@@ -27,7 +27,10 @@ export default function AdminLoginPage() {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Hardcoded verification as requested
-        if (values.email === "flyggoagency@gmail.com" && values.password === "Flyggo@8") {
+        const isAdmin1 = values.email === "flyggoagency@gmail.com" && values.password === "Flyggo@8";
+        const isAdmin2 = values.email === "admin@retailtalent.com" && values.password === "Retailtalent@9";
+        
+        if (isAdmin1 || isAdmin2) {
           toast.success("Authentication successful. Welcome, Admin.");
           router.push("/admin");
         } else {
