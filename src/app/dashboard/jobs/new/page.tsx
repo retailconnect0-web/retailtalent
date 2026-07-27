@@ -85,7 +85,11 @@ export default function PostJobPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "title" && (value === "Merchandiser" || value === "Sales Representative")) {
+      setFormData((prev) => ({ ...prev, [name]: value, employmentType: "Full Time" }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const toggleSkill = (skill: string) => {
@@ -206,9 +210,16 @@ export default function PostJobPage() {
               <label className={labelClass}>Employment Type *</label>
               <div className="relative">
                 <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <select name="employmentType" value={formData.employmentType} onChange={handleInputChange} className={`${inputClass} appearance-none pr-4`} required>
+                <select 
+                  name="employmentType" 
+                  value={formData.employmentType} 
+                  onChange={handleInputChange} 
+                  className={`${inputClass} appearance-none pr-4 ${formData.title !== "Promoter" ? "opacity-60 bg-slate-200 cursor-not-allowed" : ""}`} 
+                  required
+                  disabled={formData.title !== "Promoter"}
+                >
                   <option value="Full Time">Full Time</option>
-                  <option value="Event Based">Event Based</option>
+                  {formData.title === "Promoter" && <option value="Event Based">Event Based</option>}
                 </select>
               </div>
             </div>
