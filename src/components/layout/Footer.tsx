@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-[#0F172A] text-white pt-20 pb-10">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-6 group inline-flex">
               <div className="bg-primary text-white p-2 rounded-lg group-hover:scale-105 transition-transform">
@@ -41,25 +41,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-lg mb-6">Company</h4>
-            <ul className="flex flex-col gap-4 text-sm text-slate-400">
-              <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/careers" className="hover:text-white transition-colors">Careers</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/contact" className="hover:text-white transition-colors">Contact</Link></li>
-            </ul>
-          </div>
 
-          <div>
-            <h4 className="font-semibold text-lg mb-6">Legal</h4>
-            <ul className="flex flex-col gap-4 text-sm text-slate-400">
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/refund" className="hover:text-white transition-colors">Refund Policy</Link></li>
-              <li><Link href="/faq" className="hover:text-white transition-colors">FAQ</Link></li>
-            </ul>
-          </div>
         </div>
 
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
