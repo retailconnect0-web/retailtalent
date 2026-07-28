@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { PlusCircle, Calendar, MapPin, Users, Loader2, Edit, Trash2 } from "lucide-react";
+import { PlusCircle, Calendar, MapPin, Users, Loader2, Edit, Trash2, Download } from "lucide-react";
 import { toast } from "sonner";
 import { trainingService, Training } from "@/services/TrainingService";
+import { exportToCsv } from "@/utils/exportToCsv";
 
 export default function AdminSalesTrainingPage() {
   const [trainings, setTrainings] = useState<Training[]>([]);
@@ -102,6 +103,23 @@ export default function AdminSalesTrainingPage() {
     }
   };
 
+  const handleExport = () => {
+    if (trainings.length === 0) {
+      toast.error("No trainings to export");
+      return;
+    }
+    const formattedData = trainings.map(t => ({
+      Title: t.title,
+      Date: t.date || "Not set",
+      Location: t.location,
+      Capacity: t.capacity || "Unlimited",
+      Price: t.price,
+      Description: t.description
+    }));
+    exportToCsv(`Trainings_${new Date().toISOString().split('T')[0]}.csv`, formattedData);
+    toast.success("Trainings exported successfully!");
+  };
+
   const inputClass = "w-full bg-slate-900 border border-slate-700 text-white focus:border-red-500 focus:ring-1 focus:ring-red-500 rounded-lg px-4 py-2.5 outline-none transition-all";
   const labelClass = "text-sm font-medium text-slate-400 block mb-1.5";
 
@@ -192,8 +210,14 @@ export default function AdminSalesTrainingPage() {
 
       {/* List Section */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl shadow-xl overflow-hidden mt-8">
-        <div className="p-6 border-b border-slate-800 bg-slate-900/50">
+        <div className="p-6 border-b border-slate-800 bg-slate-900/50 flex justify-between items-center">
           <h2 className="text-lg font-semibold text-white">Existing Trainings</h2>
+          <button 
+            onClick={handleExport}
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5"
+          >
+            <Download className="w-3.5 h-3.5" /> Export to Excel/CSV
+          </button>
         </div>
         
         <div className="p-0">

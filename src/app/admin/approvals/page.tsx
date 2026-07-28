@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { userService, UserProfile, CompanyProfile } from "@/services/UserService";
-import { CheckCircle, XCircle, Loader2, AlertCircle, Eye, X, Mail, MapPin } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, AlertCircle, Eye, X, Mail, MapPin, Download } from "lucide-react";
 import { toast } from "sonner";
+import { exportToCsv } from "@/utils/exportToCsv";
 import { applicationService, JobApplication } from "@/services/ApplicationService";
 import { jobService, Job } from "@/services/JobService";
 
@@ -73,6 +74,26 @@ export default function AdminApprovalsPage() {
     }
   };
 
+  const handleExport = () => {
+    if (candidates.length === 0) {
+      toast.error("No candidates to export");
+      return;
+    }
+    const formattedData = candidates.map(c => ({
+      ID: c.uid,
+      Name: c.fullName,
+      Email: c.email,
+      WhatsApp: c.whatsappNumber,
+      State: c.state,
+      City: c.city,
+      CandidateType: c.candidateType,
+      ExperienceCategory: c.experienceCategory,
+      Status: c.status
+    }));
+    exportToCsv(`Candidate_Approvals_${new Date().toISOString().split('T')[0]}.csv`, formattedData);
+    toast.success("Candidates exported successfully!");
+  };
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div>
@@ -85,9 +106,17 @@ export default function AdminApprovalsPage() {
           <h2 className="text-lg font-bold text-white flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-amber-500" /> Pending Interview / Review
           </h2>
-          <span className="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-medium">
-            {candidates.length} Profiles
-          </span>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleExport}
+              className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5"
+            >
+              <Download className="w-3.5 h-3.5" /> Export Data
+            </button>
+            <span className="bg-slate-800 text-slate-300 text-xs px-2.5 py-1 rounded-full font-medium">
+              {candidates.length} Profiles
+            </span>
+          </div>
         </div>
         
         <div className="overflow-x-auto min-h-[300px]">
