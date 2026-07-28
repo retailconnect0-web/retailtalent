@@ -424,6 +424,7 @@ export default function CandidateProfilePage() {
                 <label className={labelClass}>Availability</label>
                 <select disabled={!isEditing} value={availability} onChange={e => setAvailability(e.target.value)} className={inputClass}>
                   <option value="">Select Availability</option>
+                  <option value="Full-time">Full-time</option>
                   <option value="Daily">Daily</option>
                   <option value="Monthly">Monthly</option>
                   <option value="Event-based">Event-based</option>
