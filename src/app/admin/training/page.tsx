@@ -46,12 +46,12 @@ export default function AdminSalesTrainingPage() {
   };
 
   const handleEdit = (t: Training) => {
-    setTitle(t.title);
+    setTitle(t.title || "");
     setDate(t.date || "");
-    setLocation(t.location);
+    setLocation(t.location || "");
     setCapacity(t.capacity ? t.capacity.toString() : "");
-    setPrice(t.price.toString());
-    setDescription(t.description);
+    setPrice(t.price !== undefined ? t.price.toString() : "0");
+    setDescription(t.description || "");
     setIsEditing(true);
     setEditingId(t.id!);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -74,15 +74,15 @@ export default function AdminSalesTrainingPage() {
     setLoading(true);
 
     try {
-      const payload: Omit<Training, "id" | "createdAt" | "updatedAt"> = {
+      const payload: any = {
         title,
         location,
         price: Number(price),
-        description
+        description,
       };
       
-      if (date) payload.date = date;
-      if (capacity) payload.capacity = Number(capacity);
+      if (date) payload.date = date; else payload.date = null;
+      if (capacity) payload.capacity = Number(capacity); else payload.capacity = null;
 
       if (isEditing && editingId) {
         await trainingService.updateTraining(editingId, payload);
@@ -96,7 +96,7 @@ export default function AdminSalesTrainingPage() {
       fetchTrainings();
     } catch (err: any) {
       console.error("Training Form Error:", err);
-      toast.error(isEditing ? "Failed to update training." : "Failed to create training. See console.");
+      toast.error(isEditing ? `Failed to update training: ${err.message}` : `Failed to create training: ${err.message}`);
     } finally {
       setLoading(false);
     }
