@@ -213,6 +213,13 @@ export default function AdminApprovalsPage() {
                       <span className="text-slate-500 text-xs uppercase tracking-wider font-semibold">Location</span>
                       <span className="text-slate-300">{selectedCandidate.city}, {selectedCandidate.state}</span>
                     </div>
+                    <div className="flex flex-col gap-1 mt-2">
+                      <span className="text-slate-500 text-xs uppercase tracking-wider font-semibold">Personal Info</span>
+                      <span className="text-slate-300">
+                        {selectedCandidate.gender || "Gender Not Specified"}
+                        {selectedCandidate.dob && ` • ${new Date().getFullYear() - new Date(selectedCandidate.dob).getFullYear()} yrs`}
+                      </span>
+                    </div>
                   </div>
                 </div>
                 
