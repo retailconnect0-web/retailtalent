@@ -34,6 +34,7 @@ export default function AdminLoginPage() {
         const isAdmin2 = email === "admin@retailtalent.com" && password === "Retailtalent@9";
         
         if (isAdmin1 || isAdmin2) {
+          localStorage.setItem("isAdminLoggedIn", "true");
           toast.success("Authentication successful. Welcome, Admin.");
           router.push("/admin");
         } else {

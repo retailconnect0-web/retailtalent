@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { LayoutDashboard, Users, Briefcase, ShieldAlert, Settings, LogOut } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function AdminLayout({
   children,
@@ -10,10 +11,27 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (pathname !== "/admin/login") {
+      const isLogged = localStorage.getItem("isAdminLoggedIn");
+      if (!isLogged) {
+        router.push("/admin/login");
+      } else {
+        setIsAuthenticated(true);
+      }
+    }
+  }, [pathname, router]);
   
   // Don't render the sidebar on the login page
   if (pathname === "/admin/login") {
     return <div className="min-h-screen bg-slate-950 text-slate-50">{children}</div>;
+  }
+
+  if (!isAuthenticated && pathname !== "/admin/login") {
+    return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
   }
 
   return (
@@ -58,10 +76,16 @@ export default function AdminLayout({
 
 
         <div className="p-4 border-t border-slate-800">
-          <Link href="/admin/login" className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors">
+          <button 
+            onClick={() => {
+              localStorage.removeItem("isAdminLoggedIn");
+              router.push("/admin/login");
+            }} 
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+          >
             <LogOut className="w-4 h-4" />
             Sign Out
-          </Link>
+          </button>
         </div>
       </aside>
 
