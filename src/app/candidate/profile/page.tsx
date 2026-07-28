@@ -50,7 +50,7 @@ export default function CandidateProfilePage() {
   const [languages, setLanguages] = useState<LanguageProficiency[]>([]);
   
   // Work Info
-  const [experienceCategory, setExperienceCategory] = useState("");
+  const [experienceCategories, setExperienceCategories] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [candidateType, setCandidateType] = useState("");
   const [availability, setAvailability] = useState("");
@@ -107,7 +107,7 @@ export default function CandidateProfilePage() {
             setShortBio(userProfile.shortBio || "");
             setLanguages(userProfile.languages || []);
             
-            setExperienceCategory(userProfile.experienceCategory || "");
+            setExperienceCategories(userProfile.experienceCategory ? userProfile.experienceCategory.split(", ") : []);
             setSkills(userProfile.skills ? userProfile.skills.split(", ") : []);
             setCandidateType(userProfile.candidateType || "");
             setAvailability(userProfile.availability || "");
@@ -184,7 +184,7 @@ export default function CandidateProfilePage() {
         fullName, dob, gender, maritalStatus, fatherName, state, city,
         whatsappNumber, altPhoneNumber,
         qualification, qualificationStatus, shortBio, languages,
-        experienceCategory, skills: skills.join(", "), candidateType, availability, noticePeriod,
+        experienceCategory: experienceCategories.join(", "), skills: skills.join(", "), candidateType, availability, noticePeriod,
         photoUrl, aadhaarUrl, panUrl,
         status: profile.status === "incomplete" || !profile.status ? "pending_review" : profile.status
       });
@@ -203,7 +203,11 @@ export default function CandidateProfilePage() {
   };
   const removeLanguage = (index: number) => setLanguages(languages.filter((_, i) => i !== index));
 
-  // Skills Handler
+  // Experience & Skills Handlers
+  const toggleExperienceCategory = (category: string) => {
+    setExperienceCategories(prev => prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]);
+  };
+  
   const toggleSkill = (skill: string) => {
     setSkills(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]);
   };
@@ -390,17 +394,20 @@ export default function CandidateProfilePage() {
             <h3 className="text-lg font-bold text-slate-900 mb-4 border-l-4 border-emerald-500 pl-3">Professional Details</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className={labelClass}>Experience Category</label>
-                <select disabled={!isEditing} value={experienceCategory} onChange={e => setExperienceCategory(e.target.value)} className={inputClass}>
-                  <option value="">Select Category</option>
-                  <option value="Alco-Beverage">Alco-Beverage</option>
-                  <option value="Food">Food</option>
-                  <option value="Non-Food">Non-Food</option>
-                  <option value="Cosmetic">Cosmetic</option>
-                  <option value="Telecom">Telecom</option>
-                  <option value="Apparel">Apparel</option>
-                </select>
+              <div className="md:col-span-2">
+                <label className={labelClass}>Experience Categories</label>
+                <div className="flex flex-wrap gap-2">
+                  {["Alco-Beverage", "Food", "Non-Food", "Cosmetic", "Telecom", "Apparel"].map(category => (
+                    <label key={category} className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border cursor-pointer transition-all ${
+                      experienceCategories.includes(category) 
+                        ? "bg-emerald-50 border-emerald-500 text-emerald-700 font-medium" 
+                        : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                    } ${!isEditing && "opacity-70 pointer-events-none"}`}>
+                      <input type="checkbox" className="hidden" checked={experienceCategories.includes(category)} onChange={() => toggleExperienceCategory(category)} disabled={!isEditing} />
+                      {category}
+                    </label>
+                  ))}
+                </div>
               </div>
               
               <div>
